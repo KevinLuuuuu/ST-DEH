@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Bucket
+   uuid = "62AC4443-EF45-48ED-977E-355A29CE5288"
+   type = "1"
+   version = "2.0">
+   <Breakpoints>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "D60B113E-9BE0-48F6-B7F0-253A7651C0D9"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "ST-DEH/ViewController.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "8"
+            endingLineNumber = "8"
+            landmarkName = "unknown"
+            landmarkType = "0">
+            <Locations>
+               <Location
+                  uuid = "D60B113E-9BE0-48F6-B7F0-253A7651C0D9 - 9ccd8940b703ac92"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "ST_DEH.ViewController.map.getter : Swift.Optional&lt;__C.MKMapView&gt;"
+                  moduleName = "ST-DEH"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/KAI/Desktop/Single%20View%20Application/ST-DEH/ST-DEH/ViewController.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "8"
+                  endingLineNumber = "8"
+                  offsetFromSymbolStart = "112">
+               </Location>
+               <Location
+                  uuid = "D60B113E-9BE0-48F6-B7F0-253A7651C0D9 - 5f6f38b9d996d4fa"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "ST_DEH.ViewController.map.setter : Swift.Optional&lt;__C.MKMapView&gt;"
+                  moduleName = "ST-DEH"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/KAI/Desktop/Single%20View%20Application/ST-DEH/ST-DEH/ViewController.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "8"
+                  endingLineNumber = "8"
+                  offsetFromSymbolStart = "144">
+               </Location>
+               <Location
+                  uuid = "D60B113E-9BE0-48F6-B7F0-253A7651C0D9 - ef90c102a3ce3e0"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "ST_DEH.ViewController.map.modify : Swift.Optional&lt;__C.MKMapView&gt;"
+                  moduleName = "ST-DEH"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/KAI/Desktop/Single%20View%20Application/ST-DEH/ST-DEH/ViewController.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "0"
+                  endingLineNumber = "0"
+                  offsetFromSymbolStart = "16">
+               </Location>
+               <Location
+                  uuid = "D60B113E-9BE0-48F6-B7F0-253A7651C0D9 - 6b64bb1b27924071"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "ST_DEH.ViewController.map.modify : Swift.Optional&lt;__C.MKMapView&gt; with unmangled suffix &quot;.resume.0&quot;"
+                  moduleName = "ST-DEH"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/KAI/Desktop/Single%20View%20Application/ST-DEH/ST-DEH/ViewController.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "8"
+                  endingLineNumber = "8"
+                  offsetFromSymbolStart = "8">
+               </Location>
+               <Location
+                  uuid = "D60B113E-9BE0-48F6-B7F0-253A7651C0D9 - da81392c12c0405e"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "ST_DEH.ViewController.init(nibName: Swift.Optional&lt;Swift.String&gt;, bundle: Swift.Optional&lt;__C.NSBundle&gt;) -&gt; ST_DEH.ViewController"
+                  moduleName = "ST-DEH"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/KAI/Desktop/Single%20View%20Application/ST-DEH/ST-DEH/ViewController.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "8"
+                  endingLineNumber = "8"
+                  offsetFromSymbolStart = "180">
+               </Location>
+               <Location
+                  uuid = "D60B113E-9BE0-48F6-B7F0-253A7651C0D9 - cd0e53a6ee73ac72"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "ST_DEH.ViewController.init(coder: __C.NSCoder) -&gt; Swift.Optional&lt;ST_DEH.ViewController&gt;"
+                  moduleName = "ST-DEH"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/KAI/Desktop/Single%20View%20Application/ST-DEH/ST-DEH/ViewController.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "8"
+                  endingLineNumber = "8"
+                  offsetFromSymbolStart = "156">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+   </Breakpoints>
+</Bucket>
