@@ -12,6 +12,8 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
     
     var imageView: UIImageView!
     
+    
+     
     override func viewDidLoad() {
         
         super.viewDidLoad()
@@ -55,7 +57,12 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
         self.view.addSubview(cameraBtn)
         self.view.addSubview(photoBtn)
     }
-
+    
+    @IBOutlet weak var latitude: UILabel!
+    @IBOutlet weak var longtitude: UILabel!
+    @IBOutlet weak var altitude: UILabel!
+    @IBOutlet weak var date: UILabel!
+    @IBOutlet weak var orientation: UILabel!
     
     /// 開啟相機或相簿
     ///
@@ -101,6 +108,18 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
             UIImageWriteToSavedPhotosAlbum(image, nil, nil, nil)
             
             print("latitude: \(photo_location[0])\n", "longtitude: \(photo_location[1])\n", "altitude: \(photo_location[2])\n", "date: \(photo_date)\n", "orientation: \(positionValue) \(photo_orient)\n")
+            
+
+                latitude.textColor = UIColor.red
+                latitude.text = "latitude: \(photo_location[0])"
+                longtitude.textColor = UIColor.red
+                longtitude.text = "longtitude: \(photo_location[1])"
+                altitude.textColor = UIColor.red
+                altitude.text = "altitude: \(photo_location[2])"
+                date.textColor = UIColor.red
+                date.text = "date: \(photo_date)"
+                orientation.textColor = UIColor.red
+                orientation.text = "orientation: \(positionValue) \(photo_orient)"
         }
         dismiss(animated: true, completion: nil)
     }
@@ -141,14 +160,24 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
         
         photo_orient = orientation.magneticHeading
         
-        if(photo_orient >= 0 && photo_orient < 90){
+        if(photo_orient >= 337.5 && photo_orient < 22.5){
             positionValue = "北"
-        }else if(photo_orient >= 90 && photo_orient < 180){
+        }else if(photo_orient >= 22.5 && photo_orient < 67.5){
+            positionValue = "東北"
+        }else if(photo_orient >= 67.5 && photo_orient < 112.5){
             positionValue = "東"
-        }else if(photo_orient >= 180 && photo_orient < 270){
+        }else if(photo_orient >= 112.5 && photo_orient < 157.5){
+            positionValue = "東南"
+        }else if(photo_orient >= 157.5 && photo_orient < 202.5){
             positionValue = "南"
-        }else if(photo_orient >= 270 && photo_orient < 360){
+        }else if(photo_orient >= 202.5 && photo_orient < 247.5){
+            positionValue = "西南"
+        }else if(photo_orient >= 247.5 && photo_orient < 292.5){
             positionValue = "西"
+        }else if(photo_orient >= 292.5 && photo_orient < 337.5){
+            positionValue = "西北"
         }
+
+
     }
 }
