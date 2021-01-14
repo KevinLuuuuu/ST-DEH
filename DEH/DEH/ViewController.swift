@@ -5,8 +5,10 @@ import Alamofire
 import SwiftyJSON
 //#import "DEH-Bridging-Header.h";
 
-struct HTTPBinResponse : Decodable { let url : String}
-
+public var label_labels: Array<String> = []
+public var label_bool: Array<Bool> = []
+public var landmark_labels: Array<String> = []
+public var landmark_bool: Array<Bool> = []
 
 class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavigationControllerDelegate, CLLocationManagerDelegate, MKMapViewDelegate {
     /*var ftpupload = FTPUpload(baseUrl: "140.116.82.135", userName: "MMLAB", password: "2080362", directoryPath: "C:/User/mmlab/DEH_Photo")*/
@@ -22,6 +24,8 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
     let imagePicker = UIImagePickerController()
     let session = URLSession.shared
     
+
+    
     var googleAPIKey = "AIzaSyAfumZAske4fWObPXEUW-eg04FFBmsq1qA"
     var googleURL: URL {
         return URL(string: "https://vision.googleapis.com/v1/images:annotate?key=\(googleAPIKey)")!
@@ -29,7 +33,7 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
     
      
     override func viewDidLoad() {
-        
+           
         super.viewDidLoad()
                 
                 //TODO:Set up the location manager here.
@@ -135,6 +139,8 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
                     for index in 0..<numLabels {
                         let label = labelAnnotations[index]["description"].stringValue
                         labels.append(label)
+                        label_labels.append(label)
+                        label_bool.append(false)
                     }
                     for label in labels {
                         // if it's not the last item add a comma
@@ -157,6 +163,8 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
                     for index in 0..<numLandmarks {
                         let label = landmarkAnnotations[index]["description"].stringValue
                         labels.append(label)
+                        landmark_labels.append(label)
+                        landmark_bool.append(false)
                     }
                     for label in labels {
                         // if it's not the last item add a comma
@@ -239,16 +247,6 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
                 orientation.textColor = UIColor.red
                 orientation.text = "orientation: \(positionValue) \(photo_orient)"
             
-            let imgData = image.jpegData(compressionQuality: 0.2)!
-
-            let parameters = ["name": "rname"] //Optional for extra parameter
-            
-            let headers = [
-                        "token" : "W2Y3TUYS0RR13T3WX2X4QPRZ4ZQVWPYQ",
-                        "Content-type": "multipart/form-data",
-                        "Content-Disposition" : "form-data"
-                    ]
-            
             AF.upload(multipartFormData: { (data) in
                   data.append(image.jpegData(compressionQuality: 1)!, withName: "image_file", fileName: "photo.jpg", mimeType: "image/jpeg")
                         
@@ -271,11 +269,11 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
                     "features": [
                         [
                             "type": "LABEL_DETECTION",
-                            "maxResults": 50
+                            "maxResults": 30
                         ],
                         [
                             "type": "LANDMARK_DETECTION",
-                            "maxResults": 50
+                            "maxResults": 5
                         ]
                     ]
                 ]
@@ -301,8 +299,62 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
             task.resume()
             
         }
+        
         dismiss(animated: true, completion: nil)
     }
+    
+    @IBAction func done(_ sender: Any) {
+        var vision_json: [String : Any] = [:]
+        if(label_labels.count != 0) {
+            for i in 0...label_labels.count - 1 {
+                if(label_bool[i]) {
+                    vision_json["label" + String(i)] = label_labels[i]
+                }
+            }
+        }
+        if(landmark_labels.count != 0) {
+            for i in 0...landmark_labels.count - 1 {
+                if(landmark_bool[i]) {
+                    vision_json["landmark" + String(i)] = landmark_labels[i]
+                }
+            }
+        }
+        
+        var send_json: [String : Any] =
+                    ["title" : "input",
+                     "date" : photo_date,
+                     "latitude" : photo_location[0],
+                     "longitude" : photo_location[1],
+                     "altitude" : photo_location[2],
+                     "orientation" : positionValue,
+                     "azimuth" : photo_orient,
+                     "weather" : "sunny",   //un
+                     "speed" : "0",         //un
+                     "address" : "0",        //un
+                     "era" : "0",            //un
+                     "category" : "0",
+                     "keyword" : "0",
+                     "description" : "0",
+                     "reference" : "0",
+                     "reason" : "0",
+                     "companion" : "0",
+                     "priority" : "0",
+                     "contributor" : "0",
+                     "url" : "0",
+                     "vision_api" : vision_json
+                    ]
+        AF.request("http://192.168.32.15:6868", method: .post, parameters: send_json, encoding: JSONEncoding.default, headers: nil).responseString{
+            response in
+            switch response.result{
+            case .success:
+                print(response)
+                break
+            case .failure(let error):
+                print(Error.self)
+            }
+        }
+    }
+    
     // MARK: - Delegate
     // ---------------------------------------------------------------------
     /// 取得選取後的照片
