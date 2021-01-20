@@ -10,7 +10,9 @@ public var label_bool: Array<Bool> = []
 public var landmark_labels: Array<String> = []
 public var landmark_bool: Array<Bool> = []
 
+
 class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavigationControllerDelegate, CLLocationManagerDelegate, MKMapViewDelegate {
+    
     /*var ftpupload = FTPUpload(baseUrl: "140.116.82.135", userName: "MMLAB", password: "2080362", directoryPath: "C:/User/mmlab/DEH_Photo")*/
     @IBOutlet weak var Choose_Label: UIButton!
     let locationManager = CLLocationManager()
@@ -18,6 +20,14 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
     var photo_date: String = ""
     var photo_orient: Double = 0.0
     var positionValue:String = ""
+    var photo_location_temp: [Double] = [0.0, 0.0, 0.0]
+    var photo_date_temp: String = ""
+    var photo_orient_temp: Double = 0.0
+    var positionValue_temp:String = ""
+    
+    var Category = ["ALL", "古蹟", "歷史建築", "紀念建築", "考古遺址", "史蹟", "文化景觀", "自然景觀", "傳統表演藝術", "傳統工藝", "口述傳統", "民俗", "民俗及有關文物", "傳統知識與實踐", "一般景觀含建築：人工地景與自然地景", "植物", "動物", "生物", "食衣住行育樂", "其他"]
+    var Priority = ["⭐️", "⭐️⭐️", "⭐️⭐️⭐️", "⭐️⭐️⭐️⭐️", "⭐️⭐️⭐️⭐️⭐️"]
+    var star_count = -1
     
     var imageView: UIImageView!
     
@@ -31,11 +41,32 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
         return URL(string: "https://vision.googleapis.com/v1/images:annotate?key=\(googleAPIKey)")!
     }
     
-     
+    @IBOutlet weak var title_text: UITextField!
+    @IBOutlet weak var keyword_text: UITextField!
+    @IBOutlet weak var description_text: UITextField!
+    @IBOutlet weak var reference_text: UITextField!
+    @IBOutlet weak var reason_text: UITextField!
+    @IBOutlet weak var companion_text: UITextField!
+    @IBOutlet weak var Cate_text: UITextField!
+    @IBOutlet weak var priority_text: UITextField!
+    var picker = UIPickerView()
+    var picker_p = UIPickerView()
     override func viewDidLoad() {
            
         super.viewDidLoad()
+        picker.dataSource = self
+        picker.delegate = self
+        picker_p.dataSource = self
+        picker_p.delegate = self
+        picker.tag = 1
+        picker_p.tag = 2
+        
+        Cate_text?.inputView = picker
+        priority_text?.inputView = picker_p
                 
+        let tap = UITapGestureRecognizer(target: self, action: #selector(closeKeyboard))
+        view.addGestureRecognizer(tap)
+        
                 //TODO:Set up the location manager here.
                 locationManager.delegate = self  //宣告自己 (current VC)為 locationManager 的代理
                 locationManager.desiredAccuracy = kCLLocationAccuracyHundredMeters //定位所在地的精確程度(一般來說，精準程度越高，定位時間越長，所耗費的電力也因此更多)
@@ -231,21 +262,27 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
         if let image = info[UIImagePickerController.InfoKey.originalImage] as? UIImage {        
             UIImageWriteToSavedPhotosAlbum(image, nil, nil, nil)
             
+            photo_location_temp[0] = photo_location[0]
+            photo_location_temp[1] = photo_location[1]
+            photo_location_temp[2] = photo_location[2]
+            photo_date_temp = photo_date
+            photo_orient_temp = photo_orient
+            positionValue_temp = positionValue
             
-            //self.ftpupload.send(data: image.pngData()!, with: "1", success: ((false)->Void))
+            
             print("latitude: \(photo_location[0])\n", "longtitude: \(photo_location[1])\n", "altitude: \(photo_location[2])\n", "date: \(photo_date)\n", "orientation: \(positionValue) \(photo_orient)\n")
             
 
                 latitude.textColor = UIColor.red
-                latitude.text = "latitude: \(photo_location[0])"
+                latitude.text = "latitude: \(photo_location_temp[0])"
                 longtitude.textColor = UIColor.red
-                longtitude.text = "longtitude: \(photo_location[1])"
+                longtitude.text = "longtitude: \(photo_location_temp[1])"
                 altitude.textColor = UIColor.red
-                altitude.text = "altitude: \(photo_location[2])"
+                altitude.text = "altitude: \(photo_location_temp[2])"
                 date.textColor = UIColor.red
-                date.text = "date: \(photo_date)"
+                date.text = "date: \(photo_date_temp)"
                 orientation.textColor = UIColor.red
-                orientation.text = "orientation: \(positionValue) \(photo_orient)"
+                orientation.text = "orientation: \(positionValue_temp) \(photo_orient_temp)"
             
             AF.upload(multipartFormData: { (data) in
                   data.append(image.jpegData(compressionQuality: 1)!, withName: "image_file", fileName: "photo.jpg", mimeType: "image/jpeg")
@@ -269,11 +306,11 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
                     "features": [
                         [
                             "type": "LABEL_DETECTION",
-                            "maxResults": 30
+                            "maxResults": 31
                         ],
                         [
                             "type": "LANDMARK_DETECTION",
-                            "maxResults": 5
+                            "maxResults": 6
                         ]
                     ]
                 ]
@@ -303,8 +340,19 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
         dismiss(animated: true, completion: nil)
     }
     
+    @objc func closeKeyboard() {
+        self.view.endEditing(true)
+    }
+    
+    
     @IBAction func done(_ sender: Any) {
         var vision_json: [String : Any] = [:]
+        for i in 0...30{
+            vision_json["label" + String(i)] = "NULL"
+        }
+        for i in 0...5{
+            vision_json["landmark" + String(i)] = "NULL"
+        }
         if(label_labels.count != 0) {
             for i in 0...label_labels.count - 1 {
                 if(label_bool[i]) {
@@ -320,25 +368,35 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
             }
         }
         
+        var ti = (title_text.text == "") ? "NULL" : title_text.text
+        var cat = (Cate_text.text == "") ? "NULL" : Cate_text.text
+        var k = (keyword_text.text == "") ? "NULL" : keyword_text.text
+        var d = (description_text.text == "") ? "NULL" : description_text.text
+        var ref = (reference_text.text == "") ? "NULL" : reference_text.text
+        var rea = (reason_text.text == "") ? "NULL" : reason_text.text
+        var c = (companion_text.text == "") ? "NULL" : companion_text.text
+        var p = (priority_text.text == "") ? 1 : star_count + 1
+        
+        
         var send_json: [String : Any] =
-                    ["title" : "input",
-                     "date" : photo_date,
-                     "latitude" : photo_location[0],
-                     "longitude" : photo_location[1],
-                     "altitude" : photo_location[2],
-                     "orientation" : positionValue,
-                     "azimuth" : photo_orient,
+                    ["title" : ti,
+                     "date" : photo_date_temp,
+                     "latitude" : photo_location_temp[0],
+                     "longitude" : photo_location_temp[1],
+                     "altitude" : photo_location_temp[2],
+                     "orientation" : positionValue_temp,
+                     "azimuth" : photo_orient_temp,
                      "weather" : "sunny",   //un
                      "speed" : "0",         //un
                      "address" : "0",        //un
                      "era" : "0",            //un
-                     "category" : "0",
-                     "keyword" : "0",
-                     "description" : "0",
-                     "reference" : "0",
-                     "reason" : "0",
-                     "companion" : "0",
-                     "priority" : "0",
+                     "category" : cat,
+                     "keyword" : k,
+                     "description" : d,
+                     "reference" : ref,
+                     "reason" : rea,
+                     "companion" : c,
+                     "priority" : p,
                      "contributor" : "0",
                      "url" : "0",
                      "vision_api" : vision_json
@@ -423,6 +481,41 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
             positionValue = "西北"
         }else if(photo_orient >= 326.25 && photo_orient < 348.75){
             positionValue = "北北西"
+        }
+    }
+}
+
+extension ViewController : UIPickerViewDataSource {
+    func numberOfComponents(in pickerView: UIPickerView) -> Int {
+        return 1
+    }
+    
+    func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
+        if(pickerView.tag == 1){
+            return Category.count
+        }
+        else{
+            return Priority.count
+        }
+    }
+}
+
+extension ViewController : UIPickerViewDelegate {
+    func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
+        if(pickerView.tag == 1){
+            return Category[row]
+        }
+        else{
+            return Priority[row]
+        }
+    }
+    func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
+        if(pickerView.tag == 1){
+            Cate_text.text = Category[row]
+        }
+        else{
+            priority_text.text = Priority[row]
+            star_count = row
         }
     }
 }
