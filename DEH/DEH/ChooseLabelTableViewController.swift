@@ -45,11 +45,27 @@ class ChooseLabelTableViewController: UITableViewController {
 
         // Configure the cell...
         if(indexPath.section == 0) {
-            //cell.textLabel?.text = "rrr"
             cell.textLabel?.text = "\(label_labels[indexPath.row])"
         }
         else {
             cell.textLabel?.text = "\(landmark_labels[indexPath.row])"
+        }
+        
+        if(indexPath.section == 0) {
+            if(label_bool[indexPath.row]) {
+                cell.accessoryType = UITableViewCell.AccessoryType.checkmark
+            }
+            else {
+                cell.accessoryType = UITableViewCell.AccessoryType.none
+            }
+        }
+        else {
+            if(landmark_bool[indexPath.row]) {
+                cell.accessoryType = UITableViewCell.AccessoryType.checkmark
+            }
+            else {
+                cell.accessoryType = UITableViewCell.AccessoryType.none
+            }
         }
         
         return cell
@@ -65,6 +81,7 @@ class ChooseLabelTableViewController: UITableViewController {
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let cell = tableView.cellForRow(at: indexPath)
+        print(cell?.textLabel)
         if(cell?.accessoryType == UITableViewCell.AccessoryType.none) {
             if(indexPath.section == 0) {
                 label_bool[indexPath.row] = true
@@ -73,6 +90,7 @@ class ChooseLabelTableViewController: UITableViewController {
             else {
                 landmark_bool[indexPath.row] = true
             }
+            print(indexPath.row)
             cell?.accessoryType = UITableViewCell.AccessoryType.checkmark
         }
         else {
@@ -83,13 +101,9 @@ class ChooseLabelTableViewController: UITableViewController {
             else {
                 landmark_bool[indexPath.row] = false
             }
+            print(indexPath.row)
             cell?.accessoryType = UITableViewCell.AccessoryType.none
         }
-        /*if label_labels[indexPath.row].done == false {
-            cell?.accessoryType = .checkmark
-            label_labels[indexPath.row].done = true
-        }*/
-        
     }
     
     /*

@@ -13,8 +13,40 @@ public var landmark_bool: Array<Bool> = []
 
 class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavigationControllerDelegate, CLLocationManagerDelegate, MKMapViewDelegate {
     
-    /*var ftpupload = FTPUpload(baseUrl: "140.116.82.135", userName: "MMLAB", password: "2080362", directoryPath: "C:/User/mmlab/DEH_Photo")*/
+    var checkDONE : Bool = false
+    
+    var fullsize :CGSize!
+    var image_bottom : Int!
+    @IBOutlet weak var si_text: UILabel!
+    @IBOutlet weak var ti_text: UILabel!
+    @IBOutlet weak var la_text: UILabel!
+    @IBOutlet weak var long_text: UILabel!
+    @IBOutlet weak var al_text: UILabel!
+    @IBOutlet weak var da_text: UILabel!
+    @IBOutlet weak var ori_text: UILabel!
+    @IBOutlet weak var cat_text: UILabel!
+    @IBOutlet weak var keyw_text: UILabel!
+    @IBOutlet weak var des_text: UILabel!
+    @IBOutlet weak var refe_text: UILabel!
+    @IBOutlet weak var reas_text: UILabel!
+    @IBOutlet weak var com_text: UILabel!
+    @IBOutlet weak var pri_text: UILabel!
+    @IBOutlet weak var scrollView: UIScrollView!
+    
+    @IBOutlet weak var latitude: UILabel!
+    @IBOutlet weak var longtitude: UILabel!
+    @IBOutlet weak var altitude: UILabel!
+    @IBOutlet weak var date: UILabel!
+    @IBOutlet weak var orientation: UILabel!
+        
+    @IBOutlet weak var allTags: UIView!
+    
     @IBOutlet weak var Choose_Label: UIButton!
+    @IBOutlet weak var done_but: UIButton!
+    
+    var image: UIImage!
+    var imageView1: UIImageView!
+    
     let locationManager = CLLocationManager()
     var photo_location: [Double] = [0.0, 0.0, 0.0]
     var photo_date: String = ""
@@ -51,9 +83,58 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
     @IBOutlet weak var priority_text: UITextField!
     var picker = UIPickerView()
     var picker_p = UIPickerView()
+
     override func viewDidLoad() {
            
         super.viewDidLoad()
+        
+        fullsize = UIScreen.main.bounds.size
+        image_bottom = Int(40 + fullsize.width - 20 + 10)
+        scrollView?.frame = CGRect(x: 0, y: 50, width: fullsize.width, height: fullsize.height - 169)
+        scrollView?.contentSize = CGSize(width: 0, height: image_bottom+(29+8)*12-3+35+50)
+        //allTags.frame = CGRect(x: 0, y: 50, width: fullsize.width, height: image_bottom+(29+8)*12-3+34+50)
+        
+        si_text?.frame = CGRect(x: 20, y: 5, width: 122, height: 29)
+        ti_text?.frame = CGRect(x: 20, y: image_bottom, width: 109, height: 29)
+        la_text?.frame = CGRect(x: 20, y: image_bottom+29+8, width: 109, height: 29)
+        long_text?.frame = CGRect(x: 20, y: image_bottom+29*2+8*2, width: 109, height: 29)
+        al_text?.frame = CGRect(x: 20, y: image_bottom+29*3+8*3, width: 109, height: 29)
+        da_text?.frame = CGRect(x: 20, y: image_bottom+29*4+8*4, width: 109, height: 29)
+        ori_text?.frame = CGRect(x: 20, y: image_bottom+29*5+8*5, width: 109, height: 29)
+        cat_text?.frame = CGRect(x: 20, y: image_bottom+29*6+8*6, width: 109, height: 29)
+        keyw_text?.frame = CGRect(x: 20, y: image_bottom+29*7+8*7, width: 109, height: 29)
+        des_text?.frame = CGRect(x: 20, y: image_bottom+29*8+8*8, width: 109, height: 29)
+        refe_text?.frame = CGRect(x: 20, y: image_bottom+29*9+8*9, width: 109, height: 29)
+        reas_text?.frame = CGRect(x: 20, y: image_bottom+29*10+8*10, width: 109, height: 29)
+        com_text?.frame = CGRect(x: 20, y: image_bottom+29*11+8*11, width: 109, height: 29)
+        pri_text?.frame = CGRect(x: 20, y: image_bottom+29*12+8*12, width: 109, height: 29)
+        
+        title_text?.frame = CGRect(x: 135, y: image_bottom - 3, width: 288, height: 34)
+        latitude?.frame = CGRect(x: 135, y: image_bottom+29+8+4, width: 288, height: 21)
+        longtitude?.frame = CGRect(x: 135, y: image_bottom+(29+8)*2+4, width: 288, height: 21)
+        altitude?.frame = CGRect(x: 135, y: image_bottom+(29+8)*3+4, width: 288, height: 21)
+        date?.frame = CGRect(x: 135, y: image_bottom+(29+8)*4+4, width: 288, height: 21)
+        orientation?.frame = CGRect(x: 135, y: image_bottom+(29+8)*5+4, width: 288, height: 21)
+        
+        Cate_text?.frame = CGRect(x: 135, y: image_bottom+(29+8)*6-3, width: 288, height: 34)
+        keyword_text?.frame = CGRect(x: 135, y: image_bottom+(29+8)*7-3, width: 288, height: 34)
+        description_text?.frame = CGRect(x: 135, y: image_bottom+(29+8)*8-3, width: 288, height: 34)
+        reference_text?.frame = CGRect(x: 135, y: image_bottom+(29+8)*9-3, width: 288, height: 34)
+        reason_text?.frame = CGRect(x: 135, y: image_bottom+(29+8)*10-3, width: 288, height: 34)
+        companion_text?.frame = CGRect(x: 135, y: image_bottom+(29+8)*11-3, width: 288, height: 34)
+        priority_text?.frame = CGRect(x: 135, y: image_bottom+(29+8)*12-3, width: 288, height: 34)
+        Choose_Label?.frame = CGRect(x: Int(fullsize.width / 8 - 20), y: image_bottom+(29+8)*12-3+50, width: 158, height: 31)
+        done_but?.frame = CGRect(x: Int(fullsize.width / 8 * 6 - 80), y: image_bottom+(29+8)*12-3+50, width: 158, height: 31)
+        
+        title_text?.attributedPlaceholder = NSAttributedString(string:"請輸入照片主題",  attributes: [NSAttributedString.Key.foregroundColor:UIColor.white])
+        keyword_text?.attributedPlaceholder = NSAttributedString(string:"請輸入照片關鍵字",  attributes: [NSAttributedString.Key.foregroundColor:UIColor.white])
+        description_text?.attributedPlaceholder = NSAttributedString(string:"請輸入照片描述",  attributes: [NSAttributedString.Key.foregroundColor:UIColor.white])
+        reference_text?.attributedPlaceholder = NSAttributedString(string:"請輸入參考資料",  attributes: [NSAttributedString.Key.foregroundColor:UIColor.white])
+        reason_text?.attributedPlaceholder = NSAttributedString(string:"來這個地點的理由",  attributes: [NSAttributedString.Key.foregroundColor:UIColor.white])
+        companion_text?.attributedPlaceholder = NSAttributedString(string:"誰跟你一起來",  attributes: [NSAttributedString.Key.foregroundColor:UIColor.white])
+        Cate_text?.attributedPlaceholder = NSAttributedString(string:"ALL",  attributes: [NSAttributedString.Key.foregroundColor:UIColor.white])
+        priority_text?.attributedPlaceholder = NSAttributedString(string:"推薦程度",  attributes: [NSAttributedString.Key.foregroundColor:UIColor.white])
+        
         picker.dataSource = self
         picker.delegate = self
         picker_p.dataSource = self
@@ -84,22 +165,22 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
         
         // 生成相機按鈕
         let cameraBtn: UIButton = UIButton()
-        cameraBtn.frame = CGRect(x: self.view.frame.size.width / 8, y:self.imageView.frame.origin.y + self.imageView.frame.size.height + 150, width: 100, height: 100)
+        cameraBtn.frame = CGRect(x: self.view.frame.size.width / 8, y: fullsize.height - 100, width: 100, height: 100)
         cameraBtn.titleLabel?.font = UIFont.boldSystemFont(ofSize: 30)
         //cameraBtn.setTitle("相機", for: .normal)
         cameraBtn.setImage(UIImage(named: "camera.jpg"), for: .normal)
-        cameraBtn.setTitleColor(UIColor.white, for: .normal)
+        //cameraBtn.setTitleColor(UIColor.white, for: .normal)
         cameraBtn.layer.cornerRadius = 10
         cameraBtn.backgroundColor = UIColor.darkGray
         cameraBtn.addTarget(self, action: #selector(ViewController.onCameraBtnAction(_:)), for: UIControl.Event.touchUpInside)
         
         // 生成相簿按鈕
         let photoBtn: UIButton = UIButton()
-        photoBtn.frame = CGRect(x: self.view.frame.size.width / 8 * 7 - 100, y: 150 + self.imageView.frame.origin.y + self.imageView.frame.size.height, width: 100, height: 100)
+        photoBtn.frame = CGRect(x: self.view.frame.size.width / 8 * 7 - 100, y: fullsize.height - 100, width: 100, height: 100)
         photoBtn.titleLabel?.font = UIFont.boldSystemFont(ofSize: 30)
         //photoBtn.setTitle("相簿", for: .normal)
         photoBtn.setImage(UIImage(named: "album.png"), for: .normal)
-        photoBtn.setTitleColor(UIColor.white, for: .normal)
+        //photoBtn.setTitleColor(UIColor.white, for: .normal)
         photoBtn.layer.cornerRadius = 10
         photoBtn.backgroundColor = UIColor.darkGray
         photoBtn.addTarget(self, action: #selector(ViewController.onPhotoBtnAction(_:)), for: UIControl.Event.touchUpInside)
@@ -108,12 +189,6 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
         self.view.addSubview(cameraBtn)
         self.view.addSubview(photoBtn)
     }
-    
-    @IBOutlet weak var latitude: UILabel!
-    @IBOutlet weak var longtitude: UILabel!
-    @IBOutlet weak var altitude: UILabel!
-    @IBOutlet weak var date: UILabel!
-    @IBOutlet weak var orientation: UILabel!
     
     /// 開啟相機或相簿
     ///
@@ -259,8 +334,40 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
     }
     
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
-        if let image = info[UIImagePickerController.InfoKey.originalImage] as? UIImage {        
+        checkDONE = true
+        photo_location_temp = [0.0, 0.0, 0.0]
+        photo_date_temp = ""
+        photo_orient_temp = 0.0
+        positionValue_temp = ""
+        star_count = -1
+        title_text.text = ""
+        keyword_text.text = ""
+        description_text.text = ""
+        reference_text.text = ""
+        reason_text.text = ""
+        companion_text.text = ""
+        Cate_text.text = ""
+        priority_text.text = ""
+        label_labels.removeAll()
+        label_bool.removeAll()
+        landmark_labels.removeAll()
+        landmark_bool.removeAll()
+        latitude.text = ""
+        longtitude.text = ""
+        altitude.text = ""
+        date.text = ""
+        orientation.text = ""
+        if(imageView1 != nil) {
+            imageView1.removeFromSuperview()
+        }
+        
+        image = info[UIImagePickerController.InfoKey.originalImage] as? UIImage
+        if(image != nil) {
             UIImageWriteToSavedPhotosAlbum(image, nil, nil, nil)
+            
+            imageView1 = UIImageView(image: image)
+            imageView1.frame = CGRect(x: 20, y :40, width :fullsize.width - 40, height :fullsize.width - 40)
+            allTags.addSubview(imageView1)
             
             photo_location_temp[0] = photo_location[0]
             photo_location_temp[1] = photo_location[1]
@@ -274,22 +381,16 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
             
 
                 latitude.textColor = UIColor.red
-                latitude.text = "latitude: \(photo_location_temp[0])"
+                latitude.text = "\(photo_location_temp[0])"
                 longtitude.textColor = UIColor.red
-                longtitude.text = "longtitude: \(photo_location_temp[1])"
+                longtitude.text = "\(photo_location_temp[1])"
                 altitude.textColor = UIColor.red
-                altitude.text = "altitude: \(photo_location_temp[2])"
+                altitude.text = "\(photo_location_temp[2])"
                 date.textColor = UIColor.red
-                date.text = "date: \(photo_date_temp)"
+                date.text = "\(photo_date_temp)"
                 orientation.textColor = UIColor.red
-                orientation.text = "orientation: \(positionValue_temp) \(photo_orient_temp)"
-            
-            AF.upload(multipartFormData: { (data) in
-                  data.append(image.jpegData(compressionQuality: 1)!, withName: "image_file", fileName: "photo.jpg", mimeType: "image/jpeg")
-                        
-            },to: "http://140.116.82.135:8000/photo_server/")
-            .response{resp in print(resp)}
-            
+                orientation.text = "\(positionValue_temp) \(photo_orient_temp)"
+      
             let imageBase64 = base64EncodeImage(image)
             
             var request = URLRequest(url: googleURL)
@@ -346,6 +447,10 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
     
     
     @IBAction func done(_ sender: Any) {
+        if(checkDONE == false) {
+            return
+        }
+        
         var vision_json: [String : Any] = [:]
         for i in 0...30{
             vision_json["label" + String(i)] = "NULL"
@@ -411,6 +516,37 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
                 print(Error.self)
             }
         }
+        
+        AF.upload(multipartFormData: { (data) in
+            data.append(self.image.jpegData(compressionQuality: 1)!, withName: "image_file", fileName: "photo.jpg", mimeType: "image/jpeg")
+                    
+        },to: "http://140.116.82.135:8000/photo_server/")
+        .response{resp in print(resp)}
+        
+        photo_location_temp = [0.0, 0.0, 0.0]
+        photo_date_temp = ""
+        photo_orient_temp = 0.0
+        positionValue_temp = ""
+        star_count = -1
+        title_text.text = ""
+        keyword_text.text = ""
+        description_text.text = ""
+        reference_text.text = ""
+        reason_text.text = ""
+        companion_text.text = ""
+        Cate_text.text = ""
+        priority_text.text = ""
+        label_labels.removeAll()
+        label_bool.removeAll()
+        landmark_labels.removeAll()
+        landmark_bool.removeAll()
+        latitude.text = ""
+        longtitude.text = ""
+        altitude.text = ""
+        date.text = ""
+        orientation.text = ""
+        imageView1.removeFromSuperview()
+        checkDONE = false
     }
     
     // MARK: - Delegate
@@ -441,7 +577,7 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
             photo_location[1]=location.coordinate.longitude
             photo_location[2]=location.altitude
             photo_date=location.timestamp.description
-            //print("latitude: \(location.coordinate.latitude), longtitude: \(location.coordinate.longitude)")
+            //print(type(of: location.timestamp))
             }
     }
 
