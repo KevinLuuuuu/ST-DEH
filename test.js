@@ -23,7 +23,6 @@ var connection = mysql.createConnection({
 }).listen(6868);*/
 
 http.createServer(function (req, res) {
-  //console.log(req);
   if(req.method == 'POST') {
     let body = '';
     req.on('data', chunk => {
@@ -32,7 +31,7 @@ http.createServer(function (req, res) {
     req.on('end', () => {
       console.log(body);
       body = JSON.parse(body);
-      connection.query('insert into photo_tags(title,  latitude, longitude, altitude, orientation, azimuth, weather, speed, address, era, category, keyword, description, reference, reason, companion, priority, contributor, url) values(' + '"' + body.title + '"' + ',' + body.latitude + ',' + body.longitude + ',' + body.altitude + ',' + '"' + body.orientation + '"' + ',' + body.azimuth + ','  + '"' + body.weather + '"' + ',' + body.speed + ',' + '"' + body.address + '"' + ',' + body.era + ',' + '"' + body.category + '"' + ',' + '"' + body.keyword + '"' + ',' + '"' + body.description + '"' + ',' + '"' + body.reference + '"' + ',' + '"' + body.reason + '"' + ',' + '"' + body.companion + '"' + ',' + body.priority + ',' + body.contributor + ',' + body.url + ');', function (errorinsert, resinsert){
+      connection.query('insert into photo_tags(title, date, latitude, longitude, altitude, orientation, azimuth, weather, speed, address, era, category, keyword, description, reference, reason, companion, priority, contributor, url) values(' + '"' + body.title + '"' + ',' + '"' + body.date + '"' + ',' + body.latitude + ',' + body.longitude + ',' + body.altitude + ',' + '"' + body.orientation + '"' + ',' + body.azimuth + ','  + '"' + body.weather + '"' + ',' + body.speed + ',' + '"' + body.address + '"' + ',' + body.era + ',' + '"' + body.category + '"' + ',' + '"' + body.keyword + '"' + ',' + '"' + body.description + '"' + ',' + '"' + body.reference + '"' + ',' + '"' + body.reason + '"' + ',' + '"' + body.companion + '"' + ',' + body.priority + ',' + body.contributor + ',' + body.url + ');', function (errorinsert, resinsert){
         if(errorinsert) console.log(errorinsert);
         console.log(resinsert);
         console.log("insert!!!!!");
@@ -45,9 +44,10 @@ http.createServer(function (req, res) {
       res.end('ok');
     });
   }
-  /*
-  res.writeHead(200, {"Content-Type" : "text/html;charset=utf8"});
-  connection.query('insert into photo_tags(title) values("孔廟");', function (errorinsert, resinsert){
+
+    //res.writeHead(200, {"Connect-Type" : "text/html;charset=utf8"});
+    //res.write("<h3>ttt</h3><br/>");
+  /*connection.query('insert into photo_tags(title) values("孔廟");', function (errorinsert, resinsert){
     if(errorinsert) console.log(errorinsert);
     console.log(resinsert);
     console.log("insert!!!!!");
