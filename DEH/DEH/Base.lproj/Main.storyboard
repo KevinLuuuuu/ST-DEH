@@ -17,6 +17,11 @@
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
+                            <activityIndicatorView opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" fixedFrame="YES" style="whiteLarge" translatesAutoresizingMaskIntoConstraints="NO" id="lNf-Fj-PV5">
+                                <rect key="frame" x="188" y="429" width="37" height="37"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <color key="backgroundColor" systemColor="systemRedColor"/>
+                            </activityIndicatorView>
                             <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="hwf-FV-8Gg">
                                 <rect key="frame" x="0.0" y="24" width="414" height="700"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
@@ -257,6 +262,7 @@
                         <outlet property="latitude" destination="WVW-up-Tu8" id="vFn-cp-sjE"/>
                         <outlet property="long_text" destination="hL5-w1-mFS" id="v1U-I4-uF6"/>
                         <outlet property="longtitude" destination="N7J-CP-WEl" id="jIG-Dh-rXc"/>
+                        <outlet property="mainView" destination="8bC-Xf-vdC" id="33N-GS-szf"/>
                         <outlet property="ori_text" destination="MPA-pU-BeG" id="98b-sm-icW"/>
                         <outlet property="orientation" destination="pdc-lA-0v1" id="xTX-bJ-Ing"/>
                         <outlet property="pri_text" destination="5qf-0C-rgY" id="akw-CN-lse"/>
@@ -269,6 +275,7 @@
                         <outlet property="si_text" destination="n6t-8W-4w2" id="24d-tv-l2n"/>
                         <outlet property="ti_text" destination="8T0-SC-3Jv" id="Ifv-6v-dAG"/>
                         <outlet property="title_text" destination="i8x-YQ-OmL" id="PF8-ZC-vMS"/>
+                        <outlet property="wait" destination="lNf-Fj-PV5" id="KiA-sc-c9k"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>

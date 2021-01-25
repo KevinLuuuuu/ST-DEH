@@ -15,6 +15,7 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
     
     var checkDONE : Bool = false
     
+    @IBOutlet var mainView: UIView!
     var fullsize :CGSize!
     var image_bottom : Int!
     @IBOutlet weak var si_text: UILabel!
@@ -66,7 +67,8 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
     let imagePicker = UIImagePickerController()
     let session = URLSession.shared
     
-
+    @IBOutlet weak var wait: UIActivityIndicatorView!
+    
     
     var googleAPIKey = "AIzaSyAfumZAske4fWObPXEUW-eg04FFBmsq1qA"
     var googleURL: URL {
@@ -134,6 +136,11 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
         companion_text?.attributedPlaceholder = NSAttributedString(string:"誰跟你一起來",  attributes: [NSAttributedString.Key.foregroundColor:UIColor.white])
         Cate_text?.attributedPlaceholder = NSAttributedString(string:"ALL",  attributes: [NSAttributedString.Key.foregroundColor:UIColor.white])
         priority_text?.attributedPlaceholder = NSAttributedString(string:"推薦程度",  attributes: [NSAttributedString.Key.foregroundColor:UIColor.white])
+        
+        mainView?.bringSubviewToFront(self.wait)
+        wait?.frame = CGRect(x: Int(fullsize.width) / 2 - 20, y: Int(fullsize.height) / 2 - 20, width: 40, height: 40)
+        wait?.stopAnimating()
+        wait?.hidesWhenStopped = true
         
         picker.dataSource = self
         picker.delegate = self
@@ -506,47 +513,70 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
                      "url" : "0",
                      "vision_api" : vision_json
                     ]
-        AF.request("http://192.168.32.15:6868", method: .post, parameters: send_json, encoding: JSONEncoding.default, headers: nil).responseString{
+        wait.startAnimating()
+        AF.request("http://140.116.82.135:6868", method: .post, parameters: send_json, encoding: JSONEncoding.default, headers: nil).responseString{
+            
             response in
             switch response.result{
             case .success:
                 print(response)
+                
+                AF.upload(multipartFormData: { (data) in
+                    data.append(self.image.jpegData(compressionQuality: 1)!, withName: "image_file", fileName: "photo.jpg", mimeType: "image/jpeg")
+                            
+                },to: "http://140.116.82.135:8000/photo_server/")
+                .response{resp in print(resp)}
+                
+                self.wait.stopAnimating()
+                self.wait.hidesWhenStopped = true
+                
+                self.photo_location_temp = [0.0, 0.0, 0.0]
+                self.photo_date_temp = ""
+                self.photo_orient_temp = 0.0
+                self.positionValue_temp = ""
+                self.star_count = -1
+                self.title_text.text = ""
+                self.keyword_text.text = ""
+                self.description_text.text = ""
+                self.reference_text.text = ""
+                self.reason_text.text = ""
+                self.companion_text.text = ""
+                self.Cate_text.text = ""
+                self.priority_text.text = ""
+                label_labels.removeAll()
+                label_bool.removeAll()
+                landmark_labels.removeAll()
+                landmark_bool.removeAll()
+                self.latitude.text = ""
+                self.longtitude.text = ""
+                self.altitude.text = ""
+                self.date.text = ""
+                self.orientation.text = ""
+                self.imageView1.removeFromSuperview()
+                self.checkDONE = false
+                
+                let controller = UIAlertController(title: "完成", message: "傳輸成功", preferredStyle: .alert)
+                let okAction = UIAlertAction(title: "OK", style: .default, handler: nil)
+                controller.addAction(okAction)
+                self.present(controller, animated: true, completion: nil)
+                
                 break
             case .failure(let error):
+                self.wait.stopAnimating()
+                self.wait.hidesWhenStopped = true
+                
                 print(Error.self)
+                
+                let controller = UIAlertController(title: "Oops ! 發生錯誤", message: "傳輸失敗，請稍後再試", preferredStyle: .alert)
+                let okAction = UIAlertAction(title: "OK", style: .default, handler: nil)
+                controller.addAction(okAction)
+                self.present(controller, animated: true, completion: nil)
+
+                break
             }
         }
         
-        AF.upload(multipartFormData: { (data) in
-            data.append(self.image.jpegData(compressionQuality: 1)!, withName: "image_file", fileName: "photo.jpg", mimeType: "image/jpeg")
-                    
-        },to: "http://140.116.82.135:8000/photo_server/")
-        .response{resp in print(resp)}
         
-        photo_location_temp = [0.0, 0.0, 0.0]
-        photo_date_temp = ""
-        photo_orient_temp = 0.0
-        positionValue_temp = ""
-        star_count = -1
-        title_text.text = ""
-        keyword_text.text = ""
-        description_text.text = ""
-        reference_text.text = ""
-        reason_text.text = ""
-        companion_text.text = ""
-        Cate_text.text = ""
-        priority_text.text = ""
-        label_labels.removeAll()
-        label_bool.removeAll()
-        landmark_labels.removeAll()
-        landmark_bool.removeAll()
-        latitude.text = ""
-        longtitude.text = ""
-        altitude.text = ""
-        date.text = ""
-        orientation.text = ""
-        imageView1.removeFromSuperview()
-        checkDONE = false
     }
     
     // MARK: - Delegate
