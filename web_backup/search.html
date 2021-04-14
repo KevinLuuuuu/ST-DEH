@@ -61,7 +61,7 @@
     <label>內容標籤(label):
     <input list="label" name="label"></label>
     <datalist id="label">
-      <option value="test">
+		{labelopt}
     </datalist>
     <div class="tooltip"><img src="http://140.116.82.135:8000/photo_server/suggestion.png" width="15">
       <span class="tooltiptext">請以英文輸入內容標籤（label)並以空格分開 ex:Sky Building </span>
@@ -72,7 +72,7 @@
       <label>地景名稱(landmark):
       <input list="landmark" name="landmark"></label>
       <datalist id="landmark">
-        <option value="test">
+        {landmarkopt}
       </datalist>
     <div class="tooltip"><img src="http://140.116.82.135:8000/photo_server/suggestion.png" width="15">
       <span class="tooltiptext">請輸入地景名稱（landmark) ex:Chikan Tower</span>
@@ -121,7 +121,10 @@
     </p>
     </li>
 
-    <input type="submit" id="submitDetails" name="submitDetails" value="Search"/>
+	<table>
+	
+    <input type="submit" id="submitDetails" name="submitDetails" value="Search" style="float:left;margin-left:10px;"/>
+	<input type="submit" name="goAuthoring" value="確認圖片" style="float:left;margin-left:20px;"/>
     </form>
     <br>
     </ul>
@@ -147,32 +150,32 @@
 				<td>
 					<form action="/search" method="post">
 						<input type="hidden" name="pic" value="2"/>
-						<input type="submit" name="del" value={del2}/>
+						{del2}
 					</form>
 				</td>
 				<td>
 					<form action="/search" method="post">
 						<input type="hidden" name="pic" value="3"/>
-						<input type="submit" name="del" value={del3}/>
+						{del3}
 					</form>
 				</td>
 				<td>
 					<form action="/search" method="post">
 						<input type="hidden" name="pic" value="4"/>
-						<input type="submit" name="del" value={del4}/>
+						{del4}
 					</form>
 				</td>
 				<td>
 					<form action="/search" method="post">
 						<input type="hidden" name="pic" value="5"/>
-						<input type="submit" name="del" value={del5}/>
+						{del5}
 					</form>
 				</td>
-				<td>
+				<!--<td>
 					<form action="/authoring" method="get">
-						<input type="submit" name="goAuthoring" value="完成"/>
+						<input type="submit" name="goAuthoring" value="確認圖片"/>
 					</form>
-				</td>
+				</td>-->
 			</tr>
 		</table>
 	

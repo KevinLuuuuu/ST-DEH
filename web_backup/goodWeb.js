@@ -28,6 +28,9 @@ function render(filename, params) {
 var totalRes=[];
 var choosed_pic=[];
 var temp_result=[];
+var labellist = ['label0', 'label1', 'label2', 'label3', 'label4', 'label5', 'label6', 'label7', 'label8', 'label9', 'label10', 'label11', 'label12', 'label13', 'label14', 'label15', 'label16', 'label17', 'label18', 'label19', 'label20', 'label21', 'label22', 'label23', 'label24', 'label25', 'label26', 'label27', 'label28', 'label29', 'label30'];
+var landmarklist = ['landmark0','landmark1','landmark2','landmark3','landmark4','landmark5'];
+		
 //autoring get
 app.get("/authoring", function(req, res) {
     res.send(render('authoring.html', {
@@ -93,10 +96,41 @@ app.post("/authoring", function(req, res) {
 app.get("/search", function(req, res) {
 	console.log(req.headers['referer']);
 	var head="http://140.116.82.135:8000/photo_server/photo%20(", rear=").jpg";
-	if(req.headers['referer'] &&req.headers['referer'] != "http://140.116.82.135:1001/authoring")
+	if(req.headers['referer'] && req.headers['referer'] != "http://140.116.82.135:1001/authoring" && req.headers['referer'] != "http://140.116.82.135:1001/authoring?goAuthoring=%E5%AE%8C%E6%88%90")
 		choosed_pic.push(totalRes[ req.headers['referer'][req.headers['referer'].length-1] - 1 ]);
 	console.log(choosed_pic);
-    res.send(render('search.html', {
+	var opt="";
+	var optlist = [];
+	var opt1="";
+	var opt1list = [];
+	connection.query("SELECT * FROM vision_api", function (err, result, fields) {
+		if (err) throw err;
+		for(var i=0; i < result.length ;i++)
+		{
+			for(var j=0; j<31; ++j)
+			{
+				if(optlist.indexOf(result[i][labellist[j]]) == -1 && result[i][labellist[j]]!="NULL")
+					optlist.push(result[i][labellist[j]]);
+				if(j < 6){
+					if(opt1list.indexOf(result[i][landmarklist[j]]) == -1 && result[i][landmarklist[j]] != "NULL")
+						opt1list.push(result[i][landmarklist[j]]);
+				}
+			}
+		}
+		for(var i=0 ; i<optlist.length; i++)
+		{
+			opt += '<option value="' + optlist[i] + '">';
+		}
+		for(var i=0 ; i<opt1list.length; i++)
+		{
+			opt1 += '<option value="' + opt1list[i] + '">';
+		}
+		
+		
+		
+		res.send(render('search.html', {
+				labelopt : opt,
+				landmarkopt: opt1,
 				choosed_pic_1 : choosed_pic.length>0 ? '"http://140.116.82.135:8000/photo_server/photo%20(' + choosed_pic[0] + ').jpg"' : '""',
 				choosed_pic_2 : choosed_pic.length>1 ? '"http://140.116.82.135:8000/photo_server/photo%20(' + choosed_pic[1] + ').jpg"' : '""',
 				choosed_pic_3 : choosed_pic.length>2 ? '"http://140.116.82.135:8000/photo_server/photo%20(' + choosed_pic[2] + ').jpg"' : '""',
@@ -104,10 +138,10 @@ app.get("/search", function(req, res) {
 				choosed_pic_5 : choosed_pic.length>4 ? '"http://140.116.82.135:8000/photo_server/photo%20(' + choosed_pic[4] + ').jpg"' : '""',
 		
 				del1 : choosed_pic.length>0 ? '<input type="submit" name="del" value="刪除"/>' : '',
-				del2 : choosed_pic.length>1 ? '"刪除"' : '""',
-				del3 : choosed_pic.length>2 ? '"刪除"' : '""',
-				del4 : choosed_pic.length>3 ? '"刪除"' : '""',
-				del5 : choosed_pic.length>4 ? '"刪除"' : '""',
+				del2 : choosed_pic.length>1 ? '<input type="submit" name="del" value="刪除"/>' : '',
+				del3 : choosed_pic.length>2 ? '<input type="submit" name="del" value="刪除"/>' : '',
+				del4 : choosed_pic.length>3 ? '<input type="submit" name="del" value="刪除"/>' : '',
+				del5 : choosed_pic.length>4 ? '<input type="submit" name="del" value="刪除"/>' : '',
 		
 				title_1: totalRes.length > 0 ? temp_result[totalRes[0]-1].title : '',
 				title_2: totalRes.length > 1 ? temp_result[totalRes[1]-1].title : '',
@@ -173,7 +207,10 @@ app.get("/search", function(req, res) {
 				line_20: totalRes.length > 19 ? '-----------------------------------------------------': '""'
 				
 		
-    }));
+		}));
+	});
+		
+    
 });
 app.post("/search", function(req, res) {
 	if(req.body.pic)
@@ -194,8 +231,6 @@ app.post("/search", function(req, res) {
 		list.push(referenceCheck);
 		list.push(contributorCheck);
 		var labelCheck = req.body.label, landmarkCheck = req.body.landmark;
-		var labellist = ['label0', 'label1', 'label2', 'label3', 'label4', 'label5', 'label6', 'label7', 'label8', 'label9', 'label10', 'label11', 'label12', 'label13', 'label14', 'label15', 'label16', 'label17', 'label18', 'label19', 'label20', 'label21', 'label22', 'label23', 'label24', 'label25', 'label26', 'label27', 'label28', 'label29', 'label30'];
-		var landmarklist = ['landmark0','landmark1','landmark2','landmark3','landmark4','landmark5'];
 		var categoryRes=[], priorityRes=[], labelRes=[], landmarkRes=[], tempRes=[];
 		var labelbool=false, landmarkbool=false, categorybool=false, prioritybool=false;
 		var head="http://140.116.82.135:8000/photo_server/photo%20(", rear=").jpg";
@@ -203,9 +238,29 @@ app.post("/search", function(req, res) {
 		var searchSplit =[];
 		console.log(req.body.Search);
 		if(labelCheck!=null)
+		{
 			labelSplit = labelCheck.split(' ');
+			labelCheck='';
+			for(var i=0;i<labelSplit.length;i++)
+			{
+				labelCheck += labelSplit[i];
+				if(i!=labelSplit.length-1)
+					labelCheck += '|';
+			}
+				
+		}
 		if(Search!=null)
+		{
 			searchSplit = Search.split(' ');
+			Search='';
+			for(var i=0;i<searchSplit.length;i++)
+			{
+				Search += searchSplit[i];
+				if(i!=searchSplit.length-1)
+					Search += '|';
+			}
+				
+		}
 		console.log(labelSplit);
 		console.log(searchSplit);
 		
@@ -215,7 +270,7 @@ app.post("/search", function(req, res) {
 		{
 			if(list[l] == listCheck[l])
 			{
-			connection.query("SELECT id FROM photo_tags WHERE " + listCheck[l] + " = "+ "'" +Search+ "'", function (err, result, fields) {
+			connection.query("SELECT id FROM photo_tags WHERE " + listCheck[l] + " REGEXP " + "'" +Search+ "'", function (err, result, fields) {
 				if (err) throw err;
 				for(var i=0; i < result.length ;i++)
 				{
@@ -233,16 +288,19 @@ app.post("/search", function(req, res) {
 		}
 		else
 		{
-			for(var l=0 ; l<31 ;l++)
+			if(labelCheck != null)
 			{
-				connection.query("SELECT id FROM vision_api WHERE " + labellist[l] + " = "+ "'" +labelCheck+ "'", function (err, result, fields) {
-					if (err) throw err;
-					for(var i=0; i < result.length ;i++)
-					{
-						if(labelRes.indexOf(result[i].id) == -1)
-							labelRes.push(result[i].id);
-					}
-				});
+				for(var l=0 ; l<31 ;l++)
+				{
+					connection.query("SELECT id FROM vision_api WHERE " + labellist[l] + " REGEXP " + "'" +labelCheck+ "'", function (err, result, fields) {
+						if (err) throw err;
+						for(var i=0; i < result.length ;i++)
+						{
+							if(labelRes.indexOf(result[i].id) == -1)
+								labelRes.push(result[i].id);
+						}
+					});
+				}
 			}
 		}
 		
@@ -255,7 +313,7 @@ app.post("/search", function(req, res) {
 		{
 			for(var l=0 ; l<6 ;l++)
 			{
-				connection.query("SELECT id FROM vision_api WHERE " + landmarklist[l] + " = "+ "'" +landmarkCheck+ "'", function (err, result, fields) {
+				connection.query("SELECT id FROM vision_api WHERE " + landmarklist[l] + " LIKE "+ "'%" +landmarkCheck+ "%'", function (err, result, fields) {
 					if (err) throw err;
 					for(var i=0; i < result.length ;i++)
 					{
@@ -356,10 +414,10 @@ app.post("/search", function(req, res) {
 				choosed_pic_5 : choosed_pic.length>4 ? '"http://140.116.82.135:8000/photo_server/photo%20(' + choosed_pic[4] + ').jpg"' : '""',
 				
 				del1 : choosed_pic.length>0 ? '<input type="submit" name="del" value="刪除"/>' : '',
-				del2 : choosed_pic.length>1 ? '"刪除"' : '""',
-				del3 : choosed_pic.length>2 ? '"刪除"' : '""',
-				del4 : choosed_pic.length>3 ? '"刪除"' : '""',
-				del5 : choosed_pic.length>4 ? '"刪除"' : '""',
+				del2 : choosed_pic.length>1 ? '<input type="submit" name="del" value="刪除"/>' : '',
+				del3 : choosed_pic.length>2 ? '<input type="submit" name="del" value="刪除"/>' : '',
+				del4 : choosed_pic.length>3 ? '<input type="submit" name="del" value="刪除"/>' : '',
+				del5 : choosed_pic.length>4 ? '<input type="submit" name="del" value="刪除"/>' : '',
 				
 				title_1: totalRes.length > 0 ? result[totalRes[0]-1].title : '',
 				title_2: totalRes.length > 1 ? result[totalRes[1]-1].title : '',
