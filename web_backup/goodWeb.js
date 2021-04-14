@@ -27,7 +27,7 @@ function render(filename, params) {
 
 var totalRes=[];
 var choosed_pic=[];
-
+var temp_result=[];
 //autoring get
 app.get("/authoring", function(req, res) {
     res.send(render('authoring.html', {
@@ -92,7 +92,8 @@ app.post("/authoring", function(req, res) {
 
 app.get("/search", function(req, res) {
 	console.log(req.headers['referer']);
-	if(req.headers['referer'] != "http://140.116.82.135:1001/authoring")
+	var head="http://140.116.82.135:8000/photo_server/photo%20(", rear=").jpg";
+	if(req.headers['referer'] &&req.headers['referer'] != "http://140.116.82.135:1001/authoring")
 		choosed_pic.push(totalRes[ req.headers['referer'][req.headers['referer'].length-1] - 1 ]);
 	console.log(choosed_pic);
     res.send(render('search.html', {
@@ -102,74 +103,75 @@ app.get("/search", function(req, res) {
 				choosed_pic_4 : choosed_pic.length>3 ? '"http://140.116.82.135:8000/photo_server/photo%20(' + choosed_pic[3] + ').jpg"' : '""',
 				choosed_pic_5 : choosed_pic.length>4 ? '"http://140.116.82.135:8000/photo_server/photo%20(' + choosed_pic[4] + ').jpg"' : '""',
 		
-				del1 : choosed_pic.length>0 ? '"刪除"' : '""',
+				del1 : choosed_pic.length>0 ? '<input type="submit" name="del" value="刪除"/>' : '',
 				del2 : choosed_pic.length>1 ? '"刪除"' : '""',
 				del3 : choosed_pic.length>2 ? '"刪除"' : '""',
 				del4 : choosed_pic.length>3 ? '"刪除"' : '""',
 				del5 : choosed_pic.length>4 ? '"刪除"' : '""',
 		
-				title_1:'',
-				title_2:'',
-				title_3:'',
-				title_4:'',
-				title_5:'',
-				title_6:'',
-				title_7:'',
-				title_8:'',
-				title_9:'',
-				title_10:'',
-				title_11:'',
-				title_12:'',
-				title_13:'',
-				title_14:'',
-				title_15:'',
-				title_16:'',
-				title_17:'',
-				title_18:'',
-				title_19:'',
-				title_20:'',
+				title_1: totalRes.length > 0 ? temp_result[totalRes[0]-1].title : '',
+				title_2: totalRes.length > 1 ? temp_result[totalRes[1]-1].title : '',
+				title_3: totalRes.length > 2 ? temp_result[totalRes[2]-1].title : '',
+				title_4: totalRes.length > 3 ? temp_result[totalRes[3]-1].title : '',
+				title_5: totalRes.length > 4 ? temp_result[totalRes[4]-1].title : '',
+				title_6: totalRes.length > 5 ? temp_result[totalRes[5]-1].title : '',
+				title_7: totalRes.length > 6 ? temp_result[totalRes[6]-1].title : '',
+				title_8: totalRes.length > 7 ? temp_result[totalRes[7]-1].title : '',
+				title_9: totalRes.length > 8 ? temp_result[totalRes[8]-1].title : '',
+				title_10: totalRes.length > 9 ? temp_result[totalRes[9]-1].title : '',
+				title_11: totalRes.length > 10 ? temp_result[totalRes[10]-1].title : '',
+				title_12: totalRes.length > 11 ? temp_result[totalRes[11]-1].title : '',
+				title_13: totalRes.length > 12 ? temp_result[totalRes[12]-1].title : '',
+				title_14: totalRes.length > 13 ? temp_result[totalRes[13]-1].title : '',
+				title_15: totalRes.length > 14 ? temp_result[totalRes[14]-1].title : '',
+				title_16: totalRes.length > 15 ? temp_result[totalRes[15]-1].title : '',
+				title_17: totalRes.length > 16 ? temp_result[totalRes[16]-1].title : '',
+				title_18: totalRes.length > 17 ? temp_result[totalRes[17]-1].title : '',
+				title_19: totalRes.length > 18 ? temp_result[totalRes[18]-1].title : '',
+				title_20: totalRes.length > 19 ? temp_result[totalRes[19]-1].title : '',
 				
-				pic_1:'""',
-				pic_2:'""',
-				pic_3:'""',
-				pic_4:'""',
-				pic_5:'""',
-				pic_6:'""',
-				pic_7:'""',
-				pic_8:'""',
-				pic_9:'""',
-				pic_10:'""',
-				pic_11:'""',
-				pic_12:'""',
-				pic_13:'""',
-				pic_14:'""',
-				pic_15:'""',
-				pic_16:'""',
-				pic_17:'""',
-				pic_18:'""',
-				pic_19:'""',
-				pic_20:'""',
+				pic_1: totalRes.length > 0 ? head + totalRes[0].toString() +rear : '""',
+				pic_2: totalRes.length > 1 ? head + totalRes[1].toString() +rear : '""',
+				pic_3: totalRes.length > 2 ? head + totalRes[2].toString() +rear : '""',
+				pic_4: totalRes.length > 3 ? head + totalRes[3].toString() +rear : '""',
+				pic_5: totalRes.length > 4 ? head + totalRes[4].toString() +rear : '""',
+				pic_6: totalRes.length > 5 ? head + totalRes[5].toString() +rear : '""',
+				pic_7: totalRes.length > 6 ? head + totalRes[6].toString() +rear : '""',
+				pic_8: totalRes.length > 7 ? head + totalRes[7].toString() +rear : '""',
+				pic_9: totalRes.length > 8 ? head + totalRes[8].toString() +rear : '""',
+				pic_10: totalRes.length > 9 ? head + totalRes[9].toString() +rear : '""',
+				pic_11: totalRes.length > 10 ? head + totalRes[10].toString() +rear : '""',
+				pic_12: totalRes.length > 11 ? head + totalRes[11].toString() +rear : '""',
+				pic_13: totalRes.length > 12 ? head + totalRes[12].toString() +rear : '""',
+				pic_14: totalRes.length > 13 ? head + totalRes[13].toString() +rear : '""',
+				pic_15: totalRes.length > 14 ? head + totalRes[14].toString() +rear : '""',
+				pic_16: totalRes.length > 15 ? head + totalRes[15].toString() +rear : '""',
+				pic_17: totalRes.length > 16 ? head + totalRes[16].toString() +rear : '""',
+				pic_18: totalRes.length > 17 ? head + totalRes[17].toString() +rear : '""',
+				pic_19: totalRes.length > 18 ? head + totalRes[18].toString() +rear : '""',
+				pic_20: totalRes.length > 19 ? head + totalRes[19].toString() +rear : '""',
 				
-				line_1:'',
-				line_2:'',
-				line_3:'',
-				line_4:'',
-				line_5:'',
-				line_6:'',
-				line_7:'',
-				line_8:'',
-				line_9:'',
-				line_10:'',
-				line_11:'',
-				line_12:'',
-				line_13:'',
-				line_14:'',
-				line_15:'',
-				line_16:'',
-				line_17:'',
-				line_18:'',
-				line_19:'',
-				line_20:''
+				line_1: totalRes.length > 0 ? '-----------------------------------------------------': '',
+				line_2: totalRes.length > 1 ? '-----------------------------------------------------': '',
+				line_3: totalRes.length > 2 ? '-----------------------------------------------------': '',
+				line_4: totalRes.length > 3 ? '-----------------------------------------------------': '',
+				line_5: totalRes.length > 4 ? '-----------------------------------------------------': '',
+				line_6: totalRes.length > 5 ? '-----------------------------------------------------': '',
+				line_7: totalRes.length > 6 ? '-----------------------------------------------------': '',
+				line_8: totalRes.length > 7 ? '-----------------------------------------------------': '',
+				line_9: totalRes.length > 8 ? '-----------------------------------------------------': '',
+				line_10: totalRes.length > 9 ? '-----------------------------------------------------': '',
+				line_11: totalRes.length > 10 ? '-----------------------------------------------------': '',
+				line_12: totalRes.length > 11 ? '-----------------------------------------------------': '',
+				line_13: totalRes.length > 12 ? '-----------------------------------------------------': '',
+				line_14: totalRes.length > 13 ? '-----------------------------------------------------': '',
+				line_15: totalRes.length > 14 ? '-----------------------------------------------------': '',
+				line_16: totalRes.length > 15 ? '-----------------------------------------------------': '',
+				line_17: totalRes.length > 16 ? '-----------------------------------------------------': '',
+				line_18: totalRes.length > 17 ? '-----------------------------------------------------': '',
+				line_19: totalRes.length > 18 ? '-----------------------------------------------------': '',
+				line_20: totalRes.length > 19 ? '-----------------------------------------------------': '""'
+				
 		
     }));
 });
@@ -197,7 +199,15 @@ app.post("/search", function(req, res) {
 		var categoryRes=[], priorityRes=[], labelRes=[], landmarkRes=[], tempRes=[];
 		var labelbool=false, landmarkbool=false, categorybool=false, prioritybool=false;
 		var head="http://140.116.82.135:8000/photo_server/photo%20(", rear=").jpg";
+		var labelSplit= [];
+		var searchSplit =[];
 		console.log(req.body.Search);
+		if(labelCheck!=null)
+			labelSplit = labelCheck.split(' ');
+		if(Search!=null)
+			searchSplit = Search.split(' ');
+		console.log(labelSplit);
+		console.log(searchSplit);
 		
 		
 		//搜尋勾選項目
@@ -336,7 +346,7 @@ app.post("/search", function(req, res) {
 		
 		//設定pic line url
 		connection.query("SELECT title FROM photo_tags WHERE id < " + "'" + 10000 + "'", function (err, result, fields) {
-
+			temp_result = result;
 			if (err) throw err;
 			res.send(render('search.html', {
 				choosed_pic_1 : choosed_pic.length>0 ? '"http://140.116.82.135:8000/photo_server/photo%20(' + choosed_pic[0] + ').jpg"' : '""',
@@ -345,7 +355,7 @@ app.post("/search", function(req, res) {
 				choosed_pic_4 : choosed_pic.length>3 ? '"http://140.116.82.135:8000/photo_server/photo%20(' + choosed_pic[3] + ').jpg"' : '""',
 				choosed_pic_5 : choosed_pic.length>4 ? '"http://140.116.82.135:8000/photo_server/photo%20(' + choosed_pic[4] + ').jpg"' : '""',
 				
-				del1 : choosed_pic.length>0 ? '"刪除"' : '""',
+				del1 : choosed_pic.length>0 ? '<input type="submit" name="del" value="刪除"/>' : '',
 				del2 : choosed_pic.length>1 ? '"刪除"' : '""',
 				del3 : choosed_pic.length>2 ? '"刪除"' : '""',
 				del4 : choosed_pic.length>3 ? '"刪除"' : '""',
