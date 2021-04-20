@@ -5,8 +5,8 @@ var connection = mysql.createConnection({
    user:"DEH1",
    password:"!abc12345",
    database:"db2021",
-   port : 3306
-   //useConnectionPooling: true
+   port : 3306,
+   useConnectionPooling: true
 });
 
 var bodyParser = require('body-parser');
@@ -93,10 +93,56 @@ app.post("/authoring", function(req, res) {
 	console.log(contributor);
 });
 
+//list get
+var pg=0;
+app.get("/list", function(req, res) {
+	connection.query('SELECT title from poi',function (err, result, fields){
+        if (err) throw err;
+		console.log(result);
+		
+		res.send(render('list.html', {
+				list1:result.length >= 0+pg*10 ? result[0+pg*10].title :'',
+				list2:result.length >= 1+pg*10 ? result[1+pg*10].title :'',
+				list3:result.length >= 2+pg*10 ? result[2+pg*10].title :'',
+				list4:result.length >= 3+pg*10 ? result[3+pg*10].title :'',
+				list5:result.length >= 4+pg*10 ? result[4+pg*10].title :'',
+				list6:result.length >= 5+pg*10 ? result[5+pg*10].title :'',
+				list7:result.length >= 6+pg*10 ? result[6+pg*10].title :'',
+				list8:result.length >= 7+pg*10 ? result[7+pg*10].title :'',
+				list9:result.length >= 8+pg*10 ? result[8+pg*10].title :'',
+				list10:result.length >= 9+pg*10 ? result[9+pg*10].title :'',
+		}));
+	});
+});
+
+app.post("/list", function(req, res) {
+	connection.query('SELECT title from poi',function (err, result, fields){
+        if (err) throw err;
+		console.log(result);
+		console.log(req.body.nextpg);
+		if(req.body.nextpg == "下一頁" && result.length > (pg+1) * 10)
+			pg++;
+		if(req.body.previouspg == "上一頁" && pg!=0)
+			pg--;
+		res.send(render('list.html', {
+				list1:result.length > 0+pg*10 ? result[0+pg*10].title :'',
+				list2:result.length > 1+pg*10 ? result[1+pg*10].title :'',
+				list3:result.length > 2+pg*10 ? result[2+pg*10].title :'',
+				list4:result.length > 3+pg*10 ? result[3+pg*10].title :'',
+				list5:result.length > 4+pg*10 ? result[4+pg*10].title :'',
+				list6:result.length > 5+pg*10 ? result[5+pg*10].title :'',
+				list7:result.length > 6+pg*10 ? result[6+pg*10].title :'',
+				list8:result.length > 7+pg*10 ? result[7+pg*10].title :'',
+				list9:result.length > 8+pg*10 ? result[8+pg*10].title :'',
+				list10:result.length > 9+pg*10 ? result[9+pg*10].title :'',
+		}));
+	});
+});
+
 app.get("/search", function(req, res) {
 	console.log(req.headers['referer']);
 	var head="http://140.116.82.135:8000/photo_server/photo%20(", rear=").jpg";
-	if(req.headers['referer'] && req.headers['referer'] != "http://140.116.82.135:1001/authoring" && req.headers['referer'] != "http://140.116.82.135:1001/authoring?goAuthoring=%E5%AE%8C%E6%88%90")
+	if(req.headers['referer'] && req.headers['referer'] != "http://140.116.82.135:1001/authoring" && req.headers['referer'] != "http://140.116.82.135:1001/authoring?goAuthoring=%E5%AE%8C%E6%88%90" && req.headers['referer'] != "http://140.116.82.135:1001/authoring?goAuthoring" && req.headers['referer'] != "http://140.116.82.135:1001/authoring?goAuthoring=%E7%A2%BA%E8%AA%8D%E5%9C%96%E7%89%87")
 		choosed_pic.push(totalRes[ req.headers['referer'][req.headers['referer'].length-1] - 1 ]);
 	console.log(choosed_pic);
 	var opt="";
@@ -331,7 +377,7 @@ app.post("/search", function(req, res) {
 		}
 		else
 		{
-			connection.query("SELECT id FROM photo_tags WHERE category = "+ "'" +categoryCheck+ "'", function (err, result, fields) {
+			connection.query("SELECT id FROM photo_tags WHERE (category = "+ "'" +categoryCheck+ "') OR (category = 'ALL')" , function (err, result, fields) {
 					if (err) throw err;
 					for(var i=0; i < result.length ;i++)
 					{

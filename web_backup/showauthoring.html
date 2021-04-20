@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Show Authoring </title>
+</head>
+
+<body>
+    <h1>Show Authoring!</h1>
+
+    <ul>
+
+    <form action="/showauthoring" method="post">
+	
+	<label>標題:</label><br>
+	<p>{show_title}</p>
+    <br>
+	
+	<table border=1>
+	<tr>
+	<td><label>描述:</label><br></td>
+	<td><p>{show_description}</p></td>
+	</tr>
+	
+	<tr>
+    <td><label>範疇:</label><br></td>
+	<td><p>{show_category}</p></td>
+	</tr>
+	
+	<tr>
+	<td><label>景點製作貢獻者:</label><br></td>
+	<td><p>{show_contributor}</p></td>
+	</tr>
+	</table>
+	
+    </ul>
+    <br><br>
+
+    <table> 
+       <br>
+	  <tr>
+      <td>
+        <img src={pic_1} width="200">
+		</td>
+    　</tr>
+    </table>
+    <p>{line_1}</p>
+
+    <table><tr>
+      <td>
+        <img src={pic_2} width="200">
+		</td>
+    </tr></table>
+    <p>{line_2}</p>
+  
+  <table><tr>
+      <td>
+        <img src={pic_3} width="200">
+		</td>
+  </tr></table>
+  <p>{line_3}</p>
+
+	  <table><tr>
+      <td>
+        <img src={pic_4} width="200">
+		</td>
+    </tr></table>
+    <p>{line_4}</p>
+
+	  <table><tr>
+      <td>
+        <img src={pic_5} width="200">
+		</td>
+    </tr></table>
+    <p>{line_5}</p>
+	
+	<br>
+	<input type="submit" id="submitDetails" name="submitDetails" value="返回"/>
+    </form>
+
+</body>
+</html>
