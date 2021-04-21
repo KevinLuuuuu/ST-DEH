@@ -1,11 +1,26 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title> Search </title>
-</head>
+	<title> 搜尋 </title>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+	<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Raleway">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+	<style>
+	html,body,h1,h2,h3,h4,h5 {font-family: "Raleway", sans-serif}
+	</style>
+	</head>
 
 <body>
+	<div class="w3-bar w3-top w3-teal w3-large" style="z-index:4">
+		<a href="http://140.116.82.135:1001/list" class="w3-bar-item w3-right">DEH</a>
+	</div>
+
+	<div class="w3-main" style="margin-top:43px;">
+		<header class="w3-container w3-teal " style="z-index:1">
     <h1>Search the picture!</h1>
+	</header>
 
     <ul>
 
@@ -37,12 +52,12 @@
 	  <li>
     <input  class="search-bar" type="text" name="Search"  id="Search"  placeholder="請輸入文字">
     <div class="tooltip"><img src="http://140.116.82.135:8000/photo_server/suggestion.png" width="15">
-      <span class="tooltiptext">請輸入欲搜尋之特徵詞彙及勾選項目</span>
+      <span class="tooltiptext">請輸入欲搜尋之特徵詞彙</span>
     </div>
   </li>
 
     <br>
-  	<input type="checkbox" id="title" name="title" value="title">
+  	<input type="checkbox" id="title" name="title" value="title" checked>
   	<label for="title"> 標題</label>
   	<input type="checkbox" id="date" name="date" value="date">
   	<label for="date"> 日期</label>
@@ -121,22 +136,21 @@
     </p>
     </li>
 
-	<table>
 	
-    <input type="submit" id="submitDetails" name="submitDetails" value="Search" style="float:left;margin-left:10px;"/>
-	<input type="submit" id="previouspg" name="previouspg" value="上一頁"/>
-    <input type="submit" id="nextpg" name="nextpg" value="下一頁"/>
+	
+	<div class="w3-container">
+    <input class="w3-button w3-dark-grey" type="submit" id="submitDetails" name="submitDetails" value="Search"/>
+	</div>
 	</form>
-	
-	<form action="/authoring" method="get">
-		<input type="submit" name="goAuthoring" value="確認圖片" style="float:left;margin-left:20px;"/>
-    </form>
-	
+
     <br>
     </ul>
-    <br><br>
+    
 
-	
+		<div class="w3-container">
+		<br>
+		<h5 class="w3-bottombar w3-border-red">已選擇的照片</h5>
+		
 		<table>
 			<tr>
 				<td><img src={choosed_pic_1} width="200"></td>
@@ -184,11 +198,18 @@
 				</td>-->
 			</tr>
 		</table>
+		</div>
 	
+	<br>
+	<form action="/authoring" method="get">
+		<div class="w3-container">
+		<input class="w3-button w3-dark-grey" type="submit" name="goAuthoring" value="確認圖片"/>
+		</div>
+	</form>
+	
+	<div class="w3-container w3-twothird">
+		<h5 class="w3-bottombar w3-border-green">Result: (點擊圖片查看更多)</h5>
     <table> 
-       Result:
-       <br>
-      (點擊圖片查看更多)
 	  <tr>
       <td><a href="http://140.116.82.135:1001/search/1">
         <img src={pic_1} width="200">
@@ -349,5 +370,13 @@
     　<td>{title_20}</td>
     </tr></table>
     <p>{line_20}</p>
+	</div>
+	<form action="/search" method="post">
+		<div class="w3-container">
+		<input class="w3-button w3-dark-grey" type="submit" id="previouspg" name="previouspg" value="上一頁"/>
+		<input class="w3-button w3-dark-grey" type="submit" id="nextpg" name="nextpg" value="下一頁"/>
+		</div>
+	</form>
+</div>
 </body>
 </html>

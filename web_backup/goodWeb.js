@@ -240,74 +240,74 @@ app.get("/search", function(req, res) {
 				choosed_pic_4 : choosed_pic.length>3 ? '"http://140.116.82.135:8000/photo_server/photo%20(' + choosed_pic[3] + ').jpg"' : '""',
 				choosed_pic_5 : choosed_pic.length>4 ? '"http://140.116.82.135:8000/photo_server/photo%20(' + choosed_pic[4] + ').jpg"' : '""',
 		
-				del1 : choosed_pic.length>0 ? '<input type="submit" name="del" value="刪除"/>' : '',
-				del2 : choosed_pic.length>1 ? '<input type="submit" name="del" value="刪除"/>' : '',
-				del3 : choosed_pic.length>2 ? '<input type="submit" name="del" value="刪除"/>' : '',
-				del4 : choosed_pic.length>3 ? '<input type="submit" name="del" value="刪除"/>' : '',
-				del5 : choosed_pic.length>4 ? '<input type="submit" name="del" value="刪除"/>' : '',
+				del1 : choosed_pic.length>0 ? '<input class="w3-button w3-grey" type="submit" name="del" value="刪除"/>' : '',
+				del2 : choosed_pic.length>1 ? '<input class="w3-button w3-grey" type="submit" name="del" value="刪除"/>' : '',
+				del3 : choosed_pic.length>2 ? '<input class="w3-button w3-grey" type="submit" name="del" value="刪除"/>' : '',
+				del4 : choosed_pic.length>3 ? '<input class="w3-button w3-grey" type="submit" name="del" value="刪除"/>' : '',
+				del5 : choosed_pic.length>4 ? '<input class="w3-button w3-grey" type="submit" name="del" value="刪除"/>' : '',
 		
-				title_1: totalRes.length > 0 ? temp_result[totalRes[0]-1].title : '',
-				title_2: totalRes.length > 1 ? temp_result[totalRes[1]-1].title : '',
-				title_3: totalRes.length > 2 ? temp_result[totalRes[2]-1].title : '',
-				title_4: totalRes.length > 3 ? temp_result[totalRes[3]-1].title : '',
-				title_5: totalRes.length > 4 ? temp_result[totalRes[4]-1].title : '',
-				title_6: totalRes.length > 5 ? temp_result[totalRes[5]-1].title : '',
-				title_7: totalRes.length > 6 ? temp_result[totalRes[6]-1].title : '',
-				title_8: totalRes.length > 7 ? temp_result[totalRes[7]-1].title : '',
-				title_9: totalRes.length > 8 ? temp_result[totalRes[8]-1].title : '',
-				title_10: totalRes.length > 9 ? temp_result[totalRes[9]-1].title : '',
-				title_11: totalRes.length > 10 ? temp_result[totalRes[10]-1].title : '',
-				title_12: totalRes.length > 11 ? temp_result[totalRes[11]-1].title : '',
-				title_13: totalRes.length > 12 ? temp_result[totalRes[12]-1].title : '',
-				title_14: totalRes.length > 13 ? temp_result[totalRes[13]-1].title : '',
-				title_15: totalRes.length > 14 ? temp_result[totalRes[14]-1].title : '',
-				title_16: totalRes.length > 15 ? temp_result[totalRes[15]-1].title : '',
-				title_17: totalRes.length > 16 ? temp_result[totalRes[16]-1].title : '',
-				title_18: totalRes.length > 17 ? temp_result[totalRes[17]-1].title : '',
-				title_19: totalRes.length > 18 ? temp_result[totalRes[18]-1].title : '',
-				title_20: totalRes.length > 19 ? temp_result[totalRes[19]-1].title : '',
+				title_1: totalRes.length > 0 + spg * 20 ? temp_result[totalRes[0 + spg * 20]-1].title : '',
+				title_2: totalRes.length > 1 + spg * 20 ? temp_result[totalRes[1 + spg * 20]-1].title : '',
+				title_3: totalRes.length > 2 + spg * 20 ? temp_result[totalRes[2 + spg * 20]-1].title : '',
+				title_4: totalRes.length > 3 + spg * 20 ? temp_result[totalRes[3 + spg * 20]-1].title : '',
+				title_5: totalRes.length > 4 + spg * 20 ? temp_result[totalRes[4 + spg * 20]-1].title : '',
+				title_6: totalRes.length > 5 + spg * 20 ? temp_result[totalRes[5 + spg * 20]-1].title : '',
+				title_7: totalRes.length > 6 + spg * 20 ? temp_result[totalRes[6 + spg * 20]-1].title : '',
+				title_8: totalRes.length > 7 + spg * 20 ? temp_result[totalRes[7 + spg * 20]-1].title : '',
+				title_9: totalRes.length > 8 + spg * 20 ? temp_result[totalRes[8 + spg * 20]-1].title : '',
+				title_10: totalRes.length > 9 + spg * 20 ? temp_result[totalRes[9 + spg * 20]-1].title : '',
+				title_11: totalRes.length > 10 + spg * 20 ? temp_result[totalRes[10 + spg * 20]-1].title : '',
+				title_12: totalRes.length > 11 + spg * 20 ? temp_result[totalRes[11 + spg * 20]-1].title : '',
+				title_13: totalRes.length > 12 + spg * 20 ? temp_result[totalRes[12 + spg * 20]-1].title : '',
+				title_14: totalRes.length > 13 + spg * 20 ? temp_result[totalRes[13 + spg * 20]-1].title : '',
+				title_15: totalRes.length > 14 + spg * 20 ? temp_result[totalRes[14 + spg * 20]-1].title : '',
+				title_16: totalRes.length > 15 + spg * 20 ? temp_result[totalRes[15 + spg * 20]-1].title : '',
+				title_17: totalRes.length > 16 + spg * 20 ? temp_result[totalRes[16 + spg * 20]-1].title : '',
+				title_18: totalRes.length > 17 + spg * 20 ? temp_result[totalRes[17 + spg * 20]-1].title : '',
+				title_19: totalRes.length > 18 + spg * 20 ? temp_result[totalRes[18 + spg * 20]-1].title : '',
+				title_20: totalRes.length > 19 + spg * 20 ? temp_result[totalRes[19 + spg * 20]-1].title : '',
 				
-				pic_1: totalRes.length > 0 ? head + totalRes[0].toString() +rear : '""',
-				pic_2: totalRes.length > 1 ? head + totalRes[1].toString() +rear : '""',
-				pic_3: totalRes.length > 2 ? head + totalRes[2].toString() +rear : '""',
-				pic_4: totalRes.length > 3 ? head + totalRes[3].toString() +rear : '""',
-				pic_5: totalRes.length > 4 ? head + totalRes[4].toString() +rear : '""',
-				pic_6: totalRes.length > 5 ? head + totalRes[5].toString() +rear : '""',
-				pic_7: totalRes.length > 6 ? head + totalRes[6].toString() +rear : '""',
-				pic_8: totalRes.length > 7 ? head + totalRes[7].toString() +rear : '""',
-				pic_9: totalRes.length > 8 ? head + totalRes[8].toString() +rear : '""',
-				pic_10: totalRes.length > 9 ? head + totalRes[9].toString() +rear : '""',
-				pic_11: totalRes.length > 10 ? head + totalRes[10].toString() +rear : '""',
-				pic_12: totalRes.length > 11 ? head + totalRes[11].toString() +rear : '""',
-				pic_13: totalRes.length > 12 ? head + totalRes[12].toString() +rear : '""',
-				pic_14: totalRes.length > 13 ? head + totalRes[13].toString() +rear : '""',
-				pic_15: totalRes.length > 14 ? head + totalRes[14].toString() +rear : '""',
-				pic_16: totalRes.length > 15 ? head + totalRes[15].toString() +rear : '""',
-				pic_17: totalRes.length > 16 ? head + totalRes[16].toString() +rear : '""',
-				pic_18: totalRes.length > 17 ? head + totalRes[17].toString() +rear : '""',
-				pic_19: totalRes.length > 18 ? head + totalRes[18].toString() +rear : '""',
-				pic_20: totalRes.length > 19 ? head + totalRes[19].toString() +rear : '""',
+				pic_1: totalRes.length > 0 + spg * 20 ? head + totalRes[0 + spg * 20].toString() +rear : '""',
+				pic_2: totalRes.length > 1 + spg * 20 ? head + totalRes[1 + spg * 20].toString() +rear : '""',
+				pic_3: totalRes.length > 2 + spg * 20 ? head + totalRes[2 + spg * 20].toString() +rear : '""',
+				pic_4: totalRes.length > 3 + spg * 20 ? head + totalRes[3 + spg * 20].toString() +rear : '""',
+				pic_5: totalRes.length > 4 + spg * 20 ? head + totalRes[4 + spg * 20].toString() +rear : '""',
+				pic_6: totalRes.length > 5 + spg * 20 ? head + totalRes[5 + spg * 20].toString() +rear : '""',
+				pic_7: totalRes.length > 6 + spg * 20 ? head + totalRes[6 + spg * 20].toString() +rear : '""',
+				pic_8: totalRes.length > 7 + spg * 20 ? head + totalRes[7 + spg * 20].toString() +rear : '""',
+				pic_9: totalRes.length > 8 + spg * 20 ? head + totalRes[8 + spg * 20].toString() +rear : '""',
+				pic_10: totalRes.length > 9 + spg * 20 ? head + totalRes[9 + spg * 20].toString() +rear : '""',
+				pic_11: totalRes.length > 10 + spg * 20 ? head + totalRes[10 + spg * 20].toString() +rear : '""',
+				pic_12: totalRes.length > 11 + spg * 20 ? head + totalRes[11 + spg * 20].toString() +rear : '""',
+				pic_13: totalRes.length > 12 + spg * 20 ? head + totalRes[12 + spg * 20].toString() +rear : '""',
+				pic_14: totalRes.length > 13 + spg * 20 ? head + totalRes[13 + spg * 20].toString() +rear : '""',
+				pic_15: totalRes.length > 14 + spg * 20 ? head + totalRes[14 + spg * 20].toString() +rear : '""',
+				pic_16: totalRes.length > 15 + spg * 20 ? head + totalRes[15 + spg * 20].toString() +rear : '""',
+				pic_17: totalRes.length > 16 + spg * 20 ? head + totalRes[16 + spg * 20].toString() +rear : '""',
+				pic_18: totalRes.length > 17 + spg * 20 ? head + totalRes[17 + spg * 20].toString() +rear : '""',
+				pic_19: totalRes.length > 18 + spg * 20 ? head + totalRes[18 + spg * 20].toString() +rear : '""',
+				pic_20: totalRes.length > 19 + spg * 20 ? head + totalRes[19 + spg * 20].toString() +rear : '""',
 				
-				line_1: totalRes.length > 0 ? '-----------------------------------------------------': '',
-				line_2: totalRes.length > 1 ? '-----------------------------------------------------': '',
-				line_3: totalRes.length > 2 ? '-----------------------------------------------------': '',
-				line_4: totalRes.length > 3 ? '-----------------------------------------------------': '',
-				line_5: totalRes.length > 4 ? '-----------------------------------------------------': '',
-				line_6: totalRes.length > 5 ? '-----------------------------------------------------': '',
-				line_7: totalRes.length > 6 ? '-----------------------------------------------------': '',
-				line_8: totalRes.length > 7 ? '-----------------------------------------------------': '',
-				line_9: totalRes.length > 8 ? '-----------------------------------------------------': '',
-				line_10: totalRes.length > 9 ? '-----------------------------------------------------': '',
-				line_11: totalRes.length > 10 ? '-----------------------------------------------------': '',
-				line_12: totalRes.length > 11 ? '-----------------------------------------------------': '',
-				line_13: totalRes.length > 12 ? '-----------------------------------------------------': '',
-				line_14: totalRes.length > 13 ? '-----------------------------------------------------': '',
-				line_15: totalRes.length > 14 ? '-----------------------------------------------------': '',
-				line_16: totalRes.length > 15 ? '-----------------------------------------------------': '',
-				line_17: totalRes.length > 16 ? '-----------------------------------------------------': '',
-				line_18: totalRes.length > 17 ? '-----------------------------------------------------': '',
-				line_19: totalRes.length > 18 ? '-----------------------------------------------------': '',
-				line_20: totalRes.length > 19 ? '-----------------------------------------------------': '""'
+				line_1: totalRes.length > 0 + spg * 20 ? '-----------------------------------------------------': '',
+				line_2: totalRes.length > 1 + spg * 20 ? '-----------------------------------------------------': '',
+				line_3: totalRes.length > 2 + spg * 20 ? '-----------------------------------------------------': '',
+				line_4: totalRes.length > 3 + spg * 20 ? '-----------------------------------------------------': '',
+				line_5: totalRes.length > 4 + spg * 20 ? '-----------------------------------------------------': '',
+				line_6: totalRes.length > 5 + spg * 20 ? '-----------------------------------------------------': '',
+				line_7: totalRes.length > 6 + spg * 20 ? '-----------------------------------------------------': '',
+				line_8: totalRes.length > 7 + spg * 20 ? '-----------------------------------------------------': '',
+				line_9: totalRes.length > 8 + spg * 20 ? '-----------------------------------------------------': '',
+				line_10: totalRes.length > 9 + spg * 20 ? '-----------------------------------------------------': '',
+				line_11: totalRes.length > 10 + spg * 20 ? '-----------------------------------------------------': '',
+				line_12: totalRes.length > 11 + spg * 20 ? '-----------------------------------------------------': '',
+				line_13: totalRes.length > 12 + spg * 20 ? '-----------------------------------------------------': '',
+				line_14: totalRes.length > 13 + spg * 20 ? '-----------------------------------------------------': '',
+				line_15: totalRes.length > 14 + spg * 20 ? '-----------------------------------------------------': '',
+				line_16: totalRes.length > 15 + spg * 20 ? '-----------------------------------------------------': '',
+				line_17: totalRes.length > 16 + spg * 20 ? '-----------------------------------------------------': '',
+				line_18: totalRes.length > 17 + spg * 20 ? '-----------------------------------------------------': '',
+				line_19: totalRes.length > 18 + spg * 20 ? '-----------------------------------------------------': '',
+				line_20: totalRes.length > 19 + spg * 20 ? '-----------------------------------------------------': '""'
 				
 		
 		}));
@@ -319,9 +319,10 @@ app.get("/search", function(req, res) {
 var spg=0;
 //search post
 app.post("/search", function(req, res) {
-	if(req.body.pic)
+	if(req.body.pic > 0)
 		choosed_pic.splice(req.body.pic-1, 1);
-	console.log(choosed_pic);
+	console.log("cccpic");
+	console.log(req.body.pic);
 	var head="http://140.116.82.135:8000/photo_server/photo%20(", rear=").jpg";
 	//res.sendfile(__dirname + '/search.html', function(err) {
         //if (err) res.send(404);
@@ -332,7 +333,6 @@ app.post("/search", function(req, res) {
 	else if(req.body.submitDetails == "Search"){
 		spg=0;
 		totalRes = [];
-		console.log("Search");
 		var Search = req.body.Search;
 		var listCheck = ['title','date','keyword','description','reference','contributor'];
 		var titleCheck = req.body.title, dateCheck=req.body.date, keywordCheck=req.body.keyword, descriptionCheck=req.body.description, referenceCheck = req.body.reference, contributorCheck =req.body.contributor, categoryCheck=req.body.category ,priorityCheck = req.body.priority;
@@ -518,7 +518,7 @@ app.post("/search", function(req, res) {
 		//設定pic line url
 		connection.query("SELECT title FROM photo_tags", function (err, result, fields) {
 			temp_result = result;
-			if(totalRes.length <= (spg) * 20)
+			if(totalRes.length <= (spg) * 20 && spg != 0)
 				spg--;
 			if (err) throw err;
 			res.send(render('search.html', {
@@ -528,11 +528,11 @@ app.post("/search", function(req, res) {
 				choosed_pic_4 : choosed_pic.length>3 ? '"http://140.116.82.135:8000/photo_server/photo%20(' + choosed_pic[3] + ').jpg"' : '""',
 				choosed_pic_5 : choosed_pic.length>4 ? '"http://140.116.82.135:8000/photo_server/photo%20(' + choosed_pic[4] + ').jpg"' : '""',
 				
-				del1 : choosed_pic.length>0 ? '<input type="submit" name="del" value="刪除"/>' : '',
-				del2 : choosed_pic.length>1 ? '<input type="submit" name="del" value="刪除"/>' : '',
-				del3 : choosed_pic.length>2 ? '<input type="submit" name="del" value="刪除"/>' : '',
-				del4 : choosed_pic.length>3 ? '<input type="submit" name="del" value="刪除"/>' : '',
-				del5 : choosed_pic.length>4 ? '<input type="submit" name="del" value="刪除"/>' : '',
+				del1 : choosed_pic.length>0 ? '<input class="w3-button w3-grey" type="submit" name="del" value="刪除"/>' : '',
+				del2 : choosed_pic.length>1 ? '<input class="w3-button w3-grey" type="submit" name="del" value="刪除"/>' : '',
+				del3 : choosed_pic.length>2 ? '<input class="w3-button w3-grey" type="submit" name="del" value="刪除"/>' : '',
+				del4 : choosed_pic.length>3 ? '<input class="w3-button w3-grey" type="submit" name="del" value="刪除"/>' : '',
+				del5 : choosed_pic.length>4 ? '<input class="w3-button w3-grey" type="submit" name="del" value="刪除"/>' : '',
 				
 				title_1: totalRes.length > 0 + spg * 20 ? result[totalRes[0 + spg * 20 ]-1].title : '',
 				title_2: totalRes.length > 1 + spg * 20 ? result[totalRes[1 + spg * 20 ]-1].title : '',
