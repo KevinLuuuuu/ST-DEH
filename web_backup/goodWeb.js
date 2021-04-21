@@ -96,6 +96,7 @@ app.post("/authoring", function(req, res) {
 //list get
 var pg=0;
 app.get("/list", function(req, res) {
+	console.log(req.headers);
 	connection.query('SELECT title from poi',function (err, result, fields){
         if (err) throw err;
 		console.log(result);
@@ -115,6 +116,7 @@ app.get("/list", function(req, res) {
 	});
 });
 
+//list post
 app.post("/list", function(req, res) {
 	connection.query('SELECT title from poi',function (err, result, fields){
         if (err) throw err;
@@ -139,6 +141,52 @@ app.post("/list", function(req, res) {
 	});
 });
 
+//showautoring get
+app.get("/showauthoring/:pick", function(req, res) {
+	connection.query('SELECT * from poi',function (err, result, fields){
+        if (err) throw err;
+		var spoi=Number(req.params.pick)+pg*10
+		res.send(render('showauthoring.html', {
+				show_title:result.length > spoi ? result[spoi].title :'',
+				show_description:result.length > spoi ? result[spoi].description :'',
+				show_category:result.length > spoi ? result[spoi].category :'',
+				show_contributor:result.length > spoi ? result[spoi].contributor :'',
+				pic_1:result[spoi].photo_id0 > 0 ? '"http://140.116.82.135:8000/photo_server/photo%20(' + result[spoi].photo_id0 + ').jpg"' : '""',
+				pic_2:result[spoi].photo_id1 > 0 ? '"http://140.116.82.135:8000/photo_server/photo%20(' + result[spoi].photo_id1 + ').jpg"' : '""',
+				pic_3:result[spoi].photo_id2 > 0 ? '"http://140.116.82.135:8000/photo_server/photo%20(' + result[spoi].photo_id2 + ').jpg"' : '""',
+				pic_4:result[spoi].photo_id3 > 0 ? '"http://140.116.82.135:8000/photo_server/photo%20(' + result[spoi].photo_id3 + ').jpg"' : '""',
+				pic_5:result[spoi].photo_id4 > 0 ? '"http://140.116.82.135:8000/photo_server/photo%20(' + result[spoi].photo_id4 + ').jpg"' : '""',
+				line_1: result[spoi].photo_id0 > 0 ? '-----------------------------------------------------': '',
+				line_2: result[spoi].photo_id1 > 0 ? '-----------------------------------------------------': '',
+				line_3: result[spoi].photo_id2 > 0 ? '-----------------------------------------------------': '',
+				line_4: result[spoi].photo_id3 > 0 ? '-----------------------------------------------------': '',
+				line_5: result[spoi].photo_id4 > 0 ? '-----------------------------------------------------': '',
+		}));
+	});
+});
+
+//showautoring post
+
+app.post("/showauthoring", function(req, res) {
+	connection.query('SELECT title from poi',function (err, result, fields){
+        if (err) throw err;
+		res.send(render('list.html', {
+				list1:result.length > 0+pg*10 ? result[0+pg*10].title :'',
+				list2:result.length > 1+pg*10 ? result[1+pg*10].title :'',
+				list3:result.length > 2+pg*10 ? result[2+pg*10].title :'',
+				list4:result.length > 3+pg*10 ? result[3+pg*10].title :'',
+				list5:result.length > 4+pg*10 ? result[4+pg*10].title :'',
+				list6:result.length > 5+pg*10 ? result[5+pg*10].title :'',
+				list7:result.length > 6+pg*10 ? result[6+pg*10].title :'',
+				list8:result.length > 7+pg*10 ? result[7+pg*10].title :'',
+				list9:result.length > 8+pg*10 ? result[8+pg*10].title :'',
+				list10:result.length > 9+pg*10 ? result[9+pg*10].title :'',
+		}));
+	});
+});
+
+
+//search get
 app.get("/search", function(req, res) {
 	console.log(req.headers['referer']);
 	var head="http://140.116.82.135:8000/photo_server/photo%20(", rear=").jpg";
@@ -258,6 +306,9 @@ app.get("/search", function(req, res) {
 		
     
 });
+
+var spg=0;
+//search post
 app.post("/search", function(req, res) {
 	if(req.body.pic)
 		choosed_pic.splice(req.body.pic-1, 1);
@@ -452,6 +503,10 @@ app.post("/search", function(req, res) {
 		connection.query("SELECT title FROM photo_tags WHERE id < " + "'" + 10000 + "'", function (err, result, fields) {
 			temp_result = result;
 			if (err) throw err;
+			if(req.body.nextpg == "下一頁" && result.length > (pg+1) * 20)
+				pg++;
+			if(req.body.previouspg == "上一頁" && pg!=0)
+				pg--;
 			res.send(render('search.html', {
 				choosed_pic_1 : choosed_pic.length>0 ? '"http://140.116.82.135:8000/photo_server/photo%20(' + choosed_pic[0] + ').jpg"' : '""',
 				choosed_pic_2 : choosed_pic.length>1 ? '"http://140.116.82.135:8000/photo_server/photo%20(' + choosed_pic[1] + ').jpg"' : '""',
