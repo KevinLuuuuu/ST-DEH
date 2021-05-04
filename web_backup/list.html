@@ -1,5 +1,22 @@
 <!DOCTYPE html>
 <html>
+
+<body>
+<script src = "/socket.io/socket.io.js"></script>
+<script>
+	const socket = io.connect('http://140.116.82.135:1001');
+</script>
+</body>
+
+<SCRIPT LANGUAGE=”javascript”>
+<!–
+function openwin(){
+	window.open ("http://140.116.82.135:1001/list","newwindow")
+}
+–>
+</SCRIPT>
+
+
 <head>
     <title> 景點列表 </title>
 <meta charset="UTF-8">
@@ -14,12 +31,15 @@ html,body,h1,h2,h3,h4,h5 {font-family: "Raleway", sans-serif}
 
 <body>
 	<div class="w3-bar w3-top w3-teal w3-large" style="z-index:4">
+		{login}
 		<a href="http://140.116.82.135:1001/list" class="w3-bar-item w3-right">DEH</a>
 	</div>
 
 	<div class="w3-main" style="margin-top:43px;">
 		<header class="w3-container w3-teal " style="z-index:1">
-			<h3><p align="right"><a href="http://140.116.82.135:1001/authoring">創作</a></p></h3>
+			<h3>
+				<a href="http://140.116.82.135:1001/authoring">創作</a>
+			</h3>
 			<h1>景點列表</h1>
 		</header>
 		<ul>
@@ -50,5 +70,7 @@ html,body,h1,h2,h3,h4,h5 {font-family: "Raleway", sans-serif}
 		</ul>
 		<br><br>
 	</div>
+	<input type="button" value="選擇此照片" onclick="javascript:window.prompt('請輸入使用者名稱')">
 </body>
+
 </html>

@@ -1,4 +1,4 @@
-var http = require("http");
+//var http = require("http");
 var mysql=require('mysql');
 var connection = mysql.createConnection({
    host:"140.116.82.135",
@@ -9,12 +9,14 @@ var connection = mysql.createConnection({
    useConnectionPooling: true
 });
 
+const cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var jsonParser = bodyParser.json()
 var express = require("express"),
 app = express();
-app.use(bodyParser.urlencoded({ extended: false }))
+app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
+app.use(cookieParser());
 
 var fs = require('fs');
 function render(filename, params) {
@@ -25,14 +27,110 @@ function render(filename, params) {
   return data;
 }
 
-var totalRes=[];
-var choosed_pic=[];
-var temp_result=[];
+var totalRes={};
+var choosed_pic={};
+var temp_result={};
 var labellist = ['label0', 'label1', 'label2', 'label3', 'label4', 'label5', 'label6', 'label7', 'label8', 'label9', 'label10', 'label11', 'label12', 'label13', 'label14', 'label15', 'label16', 'label17', 'label18', 'label19', 'label20', 'label21', 'label22', 'label23', 'label24', 'label25', 'label26', 'label27', 'label28', 'label29', 'label30'];
 var landmarklist = ['landmark0','landmark1','landmark2','landmark3','landmark4','landmark5'];
+	
+const server = require('http').Server(app);
+const io = require('socket.io')(server);
+
+//list get
+var pg={};
+var spg={};
+var ID;
+
+	/*io.on('connection', function(socket){
+		console.log('User');
+		console.log(socket.id);
+		ID = socket.id;
+	});*/
+app.get("/list", function(req, res) {
+	if(req.cookies['name']!=undefined) {
+		pg[req.cookies['name']] = 0;
+		spg[req.cookies['name']] = 0;
+		totalRes[req.cookies['name']] = [];
+		choosed_pic[req.cookies['name']] = [];
+		temp_result[req.cookies['name']] = [];
+	}
+	//const socket = io.connect();
+	//console.log(ID);
+	connection.query('SELECT title from poi',function (err, result, fields){
+        if (err) throw err;
+		console.log(result);
 		
+		res.send(render('list.html', {
+				login:req.cookies['name']===undefined ? '<a href="http://140.116.82.135:1001/username">登入</a>' : req.cookies['name'],
+				
+				list1:result.length > 0+pg[req.cookies['name']]*10 ? result[0+pg[req.cookies['name']]*10].title :'',
+				list2:result.length > 1+pg[req.cookies['name']]*10 ? result[1+pg[req.cookies['name']]*10].title :'',
+				list3:result.length > 2+pg[req.cookies['name']]*10 ? result[2+pg[req.cookies['name']]*10].title :'',
+				list4:result.length > 3+pg[req.cookies['name']]*10 ? result[3+pg[req.cookies['name']]*10].title :'',
+				list5:result.length > 4+pg[req.cookies['name']]*10 ? result[4+pg[req.cookies['name']]*10].title :'',
+				list6:result.length > 5+pg[req.cookies['name']]*10 ? result[5+pg[req.cookies['name']]*10].title :'',
+				list7:result.length > 6+pg[req.cookies['name']]*10 ? result[6+pg[req.cookies['name']]*10].title :'',
+				list8:result.length > 7+pg[req.cookies['name']]*10 ? result[7+pg[req.cookies['name']]*10].title :'',
+				list9:result.length > 8+pg[req.cookies['name']]*10 ? result[8+pg[req.cookies['name']]*10].title :'',
+				list10:result.length > 9+pg[req.cookies['name']]*10 ? result[9+pg[req.cookies['name']]*10].title :'',
+		}));
+	});
+});
+//list post
+app.post("/list", function(req, res) {
+	if(req.body.username) {
+		res.cookie("name", req.body.username, {
+			maxAge : 86400*1000
+			/*,
+			httpOnly : true,
+			secure : true
+			*/
+		});
+		pg[req.body.username] = 0;
+		spg[req.body.username] = 0;
+		totalRes[req.body.username] = [];
+		choosed_pic[req.body.username] = [];
+		temp_result[req.body.username] = [];
+	}
+	console.log("qwiue "+ pg[req.body.username])
+	//if(req.body.username)
+	//	all_user[req.connection.remoteAddress+req.body.username]=req.body.username;
+	console.log("asd"+req.headers.cookie);
+	console.log(req.cookies['name']);
+	connection.query('SELECT title from poi',function (err, result, fields){
+        if (err) throw err;
+		console.log(result);
+		console.log(req.body.nextpg);
+		if(req.body.nextpg == "下一頁" && result.length > (pg[req.cookies['name']]+1) * 10)
+			pg[req.cookies['name']]++;
+		if(req.body.previouspg == "上一頁" && pg[req.cookies['name']]!=0)
+			pg[req.cookies['name']]--;
+		res.send(render('list.html', {
+				login:req.cookies['name'] === undefined ? '<a id=u name=u value=' + req.body.username +'>'+ req.body.username +'</a>' : '<a id=u name=u value=' + req.cookies['name'] +'>'+ req.cookies['name'] +'</a>',
+				
+				list1:result.length > 0+pg[req.body.username ? req.body.username : req.cookies['name']]*10 ? result[0+pg[req.body.username ? req.body.username : req.cookies['name']]*10].title :'',
+				list2:result.length > 1+pg[req.body.username ? req.body.username : req.cookies['name']]*10 ? result[1+pg[req.body.username ? req.body.username : req.cookies['name']]*10].title :'',
+				list3:result.length > 2+pg[req.body.username ? req.body.username : req.cookies['name']]*10 ? result[2+pg[req.body.username ? req.body.username : req.cookies['name']]*10].title :'',
+				list4:result.length > 3+pg[req.body.username ? req.body.username : req.cookies['name']]*10 ? result[3+pg[req.body.username ? req.body.username : req.cookies['name']]*10].title :'',
+				list5:result.length > 4+pg[req.body.username ? req.body.username : req.cookies['name']]*10 ? result[4+pg[req.body.username ? req.body.username : req.cookies['name']]*10].title :'',
+				list6:result.length > 5+pg[req.body.username ? req.body.username : req.cookies['name']]*10 ? result[5+pg[req.body.username ? req.body.username : req.cookies['name']]*10].title :'',
+				list7:result.length > 6+pg[req.body.username ? req.body.username : req.cookies['name']]*10 ? result[6+pg[req.body.username ? req.body.username : req.cookies['name']]*10].title :'',
+				list8:result.length > 7+pg[req.body.username ? req.body.username : req.cookies['name']]*10 ? result[7+pg[req.body.username ? req.body.username : req.cookies['name']]*10].title :'',
+				list9:result.length > 8+pg[req.body.username ? req.body.username : req.cookies['name']]*10 ? result[8+pg[req.body.username ? req.body.username : req.cookies['name']]*10].title :'',
+				list10:result.length > 9+pg[req.body.username ? req.body.username : req.cookies['name']]*10 ? result[9+pg[req.body.username ? req.body.username : req.cookies['name']]*10].title :'',
+		}));
+	});
+});
+
+
+app.get("/username", function(req, res) {
+	res.send(render('username.html', {
+	}));
+});	
+	
 //autoring get
 app.get("/authoring", function(req, res) {
+	console.log(req.headers.cookie);
     res.send(render('authoring.html', {
 				title_1:'',
 				title_2:'',
@@ -40,11 +138,11 @@ app.get("/authoring", function(req, res) {
 				title_4:'',
 				title_5:'',
 				
-				pic_1 : choosed_pic.length>0 ? '"http://140.116.82.135:8000/photo_server/photo%20(' + choosed_pic[0] + ').jpg"' : '""',
-				pic_2 : choosed_pic.length>1 ? '"http://140.116.82.135:8000/photo_server/photo%20(' + choosed_pic[1] + ').jpg"' : '""',
-				pic_3 : choosed_pic.length>2 ? '"http://140.116.82.135:8000/photo_server/photo%20(' + choosed_pic[2] + ').jpg"' : '""',
-				pic_4 : choosed_pic.length>3 ? '"http://140.116.82.135:8000/photo_server/photo%20(' + choosed_pic[3] + ').jpg"' : '""',
-				pic_5 : choosed_pic.length>4 ? '"http://140.116.82.135:8000/photo_server/photo%20(' + choosed_pic[4] + ').jpg"' : '""',
+				pic_1 : choosed_pic[req.cookies['name']].length>0 ? '"http://140.116.82.135:8000/photo_server/photo%20(' + choosed_pic[req.cookies['name']][0] + ').jpg"' : '""',
+				pic_2 : choosed_pic[req.cookies['name']].length>1 ? '"http://140.116.82.135:8000/photo_server/photo%20(' + choosed_pic[req.cookies['name']][1] + ').jpg"' : '""',
+				pic_3 : choosed_pic[req.cookies['name']].length>2 ? '"http://140.116.82.135:8000/photo_server/photo%20(' + choosed_pic[req.cookies['name']][2] + ').jpg"' : '""',
+				pic_4 : choosed_pic[req.cookies['name']].length>3 ? '"http://140.116.82.135:8000/photo_server/photo%20(' + choosed_pic[req.cookies['name']][3] + ').jpg"' : '""',
+				pic_5 : choosed_pic[req.cookies['name']].length>4 ? '"http://140.116.82.135:8000/photo_server/photo%20(' + choosed_pic[req.cookies['name']][4] + ').jpg"' : '""',
 				
 				line_1:'',
 				line_2:'',
@@ -63,90 +161,42 @@ app.post("/authoring", function(req, res) {
 	var category = req.body.category;
 	var contributor = req.body.contributor;
 	
-	var ll = choosed_pic.length;
+	var ll = choosed_pic[req.cookies['name']].length;
 	for(var i=0; i<=5-ll-1; ++i)
-		choosed_pic.push(-1);
+		choosed_pic[req.cookies['name']].push(-1);
 	
-	connection.query('insert into poi(photo_id0,photo_id1,photo_id2,photo_id3,photo_id4,title,description,category,contributor) values('+ '"' + choosed_pic[0] + '"' + ',' + '"' + choosed_pic[1] + '"' + ','+'"' + choosed_pic[2] + '"' + ','+'"' + choosed_pic[3] + '"' + ','+'"' + choosed_pic[4] + '"' + ',' +'"' + title + '"' + ',' +'"' + description + '"' + ',' +'"' + category + '"' + ',' +'"' + contributor + '"' + ');', function (errorinsert, resinsert){
+	connection.query('insert into poi(photo_id0,photo_id1,photo_id2,photo_id3,photo_id4,title,description,category,contributor) values('+ '"' + choosed_pic[req.cookies['name']][0] + '"' + ',' + '"' + choosed_pic[req.cookies['name']][1] + '"' + ','+'"' + choosed_pic[req.cookies['name']][2] + '"' + ','+'"' + choosed_pic[req.cookies['name']][3] + '"' + ','+'"' + choosed_pic[req.cookies['name']][4] + '"' + ',' +'"' + title + '"' + ',' +'"' + description + '"' + ',' +'"' + category + '"' + ',' +'"' + contributor + '"' + ');', function (errorinsert, resinsert){
         if(errorinsert) console.log(errorinsert);
 		console.log(resinsert);
         console.log("insert!!!!!");
 		
 		res.send(render('authoring.html', {
-		pic_1 : choosed_pic.length>0 ? '"http://140.116.82.135:8000/photo_server/photo%20(' + choosed_pic[0] + ').jpg"' : '""',
-		pic_2 : choosed_pic.length>1 ? '"http://140.116.82.135:8000/photo_server/photo%20(' + choosed_pic[1] + ').jpg"' : '""',
-		pic_3 : choosed_pic.length>2 ? '"http://140.116.82.135:8000/photo_server/photo%20(' + choosed_pic[2] + ').jpg"' : '""',
-		pic_4 : choosed_pic.length>3 ? '"http://140.116.82.135:8000/photo_server/photo%20(' + choosed_pic[3] + ').jpg"' : '""',
-		pic_5 : choosed_pic.length>4 ? '"http://140.116.82.135:8000/photo_server/photo%20(' + choosed_pic[4] + ').jpg"' : '""',
-		line_1: choosed_pic.length > 0 ? '-----------------------------------------------------': '',
-		line_2: choosed_pic.length > 1 ? '-----------------------------------------------------': '',
-		line_3: choosed_pic.length > 2 ? '-----------------------------------------------------': '',
-		line_4: choosed_pic.length > 3 ? '-----------------------------------------------------': '',
-		line_5: choosed_pic.length > 4 ? '-----------------------------------------------------': '',
+		pic_1 : choosed_pic[req.cookies['name']].length>0 ? '"http://140.116.82.135:8000/photo_server/photo%20(' + choosed_pic[req.cookies['name']][0] + ').jpg"' : '""',
+		pic_2 : choosed_pic[req.cookies['name']].length>1 ? '"http://140.116.82.135:8000/photo_server/photo%20(' + choosed_pic[req.cookies['name']][1] + ').jpg"' : '""',
+		pic_3 : choosed_pic[req.cookies['name']].length>2 ? '"http://140.116.82.135:8000/photo_server/photo%20(' + choosed_pic[req.cookies['name']][2] + ').jpg"' : '""',
+		pic_4 : choosed_pic[req.cookies['name']].length>3 ? '"http://140.116.82.135:8000/photo_server/photo%20(' + choosed_pic[req.cookies['name']][3] + ').jpg"' : '""',
+		pic_5 : choosed_pic[req.cookies['name']].length>4 ? '"http://140.116.82.135:8000/photo_server/photo%20(' + choosed_pic[req.cookies['name']][4] + ').jpg"' : '""',
+		line_1: choosed_pic[req.cookies['name']].length > 0 ? '-----------------------------------------------------': '',
+		line_2: choosed_pic[req.cookies['name']].length > 1 ? '-----------------------------------------------------': '',
+		line_3: choosed_pic[req.cookies['name']].length > 2 ? '-----------------------------------------------------': '',
+		line_4: choosed_pic[req.cookies['name']].length > 3 ? '-----------------------------------------------------': '',
+		line_5: choosed_pic[req.cookies['name']].length > 4 ? '-----------------------------------------------------': '',
 		}));
 	});
     
-	choosed_pic=[];
+	choosed_pic[req.cookies['name']]=[];
 	console.log(title);
 	console.log(description);
 	console.log(category);
 	console.log(contributor);
 });
 
-//list get
-var pg=0;
-app.get("/list", function(req, res) {
-	console.log(req.connection.remoteAddress);
-	console.log(req.connection.remotePort);
-	connection.query('SELECT title from poi',function (err, result, fields){
-        if (err) throw err;
-		console.log(result);
-		
-		res.send(render('list.html', {
-				list1:result.length >= 0+pg*10 ? result[0+pg*10].title :'',
-				list2:result.length >= 1+pg*10 ? result[1+pg*10].title :'',
-				list3:result.length >= 2+pg*10 ? result[2+pg*10].title :'',
-				list4:result.length >= 3+pg*10 ? result[3+pg*10].title :'',
-				list5:result.length >= 4+pg*10 ? result[4+pg*10].title :'',
-				list6:result.length >= 5+pg*10 ? result[5+pg*10].title :'',
-				list7:result.length >= 6+pg*10 ? result[6+pg*10].title :'',
-				list8:result.length >= 7+pg*10 ? result[7+pg*10].title :'',
-				list9:result.length >= 8+pg*10 ? result[8+pg*10].title :'',
-				list10:result.length >= 9+pg*10 ? result[9+pg*10].title :'',
-		}));
-	});
-});
-
-//list post
-app.post("/list", function(req, res) {
-	connection.query('SELECT title from poi',function (err, result, fields){
-        if (err) throw err;
-		console.log(result);
-		console.log(req.body.nextpg);
-		if(req.body.nextpg == "下一頁" && result.length > (pg+1) * 10)
-			pg++;
-		if(req.body.previouspg == "上一頁" && pg!=0)
-			pg--;
-		res.send(render('list.html', {
-				list1:result.length > 0+pg*10 ? result[0+pg*10].title :'',
-				list2:result.length > 1+pg*10 ? result[1+pg*10].title :'',
-				list3:result.length > 2+pg*10 ? result[2+pg*10].title :'',
-				list4:result.length > 3+pg*10 ? result[3+pg*10].title :'',
-				list5:result.length > 4+pg*10 ? result[4+pg*10].title :'',
-				list6:result.length > 5+pg*10 ? result[5+pg*10].title :'',
-				list7:result.length > 6+pg*10 ? result[6+pg*10].title :'',
-				list8:result.length > 7+pg*10 ? result[7+pg*10].title :'',
-				list9:result.length > 8+pg*10 ? result[8+pg*10].title :'',
-				list10:result.length > 9+pg*10 ? result[9+pg*10].title :'',
-		}));
-	});
-});
 
 //showautoring get
 app.get("/showauthoring/:pick", function(req, res) {
 	connection.query('SELECT * from poi',function (err, result, fields){
         if (err) throw err;
-		var spoi=Number(req.params.pick)+pg*10
+		var spoi=Number(req.params.pick)+pg[req.cookies['name']]*10
 		res.send(render('showauthoring.html', {
 				show_title:result.length > spoi ? result[spoi].title :'',
 				show_description:result.length > spoi ? result[spoi].description :'',
@@ -172,16 +222,16 @@ app.post("/showauthoring", function(req, res) {
 	connection.query('SELECT title from poi',function (err, result, fields){
         if (err) throw err;
 		res.send(render('list.html', {
-				list1:result.length > 0+pg*10 ? result[0+pg*10].title :'',
-				list2:result.length > 1+pg*10 ? result[1+pg*10].title :'',
-				list3:result.length > 2+pg*10 ? result[2+pg*10].title :'',
-				list4:result.length > 3+pg*10 ? result[3+pg*10].title :'',
-				list5:result.length > 4+pg*10 ? result[4+pg*10].title :'',
-				list6:result.length > 5+pg*10 ? result[5+pg*10].title :'',
-				list7:result.length > 6+pg*10 ? result[6+pg*10].title :'',
-				list8:result.length > 7+pg*10 ? result[7+pg*10].title :'',
-				list9:result.length > 8+pg*10 ? result[8+pg*10].title :'',
-				list10:result.length > 9+pg*10 ? result[9+pg*10].title :'',
+				list1:result.length > 0+pg[req.cookies['name']]*10 ? result[0+pg[req.cookies['name']]*10].title :'',
+				list2:result.length > 1+pg[req.cookies['name']]*10 ? result[1+pg[req.cookies['name']]*10].title :'',
+				list3:result.length > 2+pg[req.cookies['name']]*10 ? result[2+pg[req.cookies['name']]*10].title :'',
+				list4:result.length > 3+pg[req.cookies['name']]*10 ? result[3+pg[req.cookies['name']]*10].title :'',
+				list5:result.length > 4+pg[req.cookies['name']]*10 ? result[4+pg[req.cookies['name']]*10].title :'',
+				list6:result.length > 5+pg[req.cookies['name']]*10 ? result[5+pg[req.cookies['name']]*10].title :'',
+				list7:result.length > 6+pg[req.cookies['name']]*10 ? result[6+pg[req.cookies['name']]*10].title :'',
+				list8:result.length > 7+pg[req.cookies['name']]*10 ? result[7+pg[req.cookies['name']]*10].title :'',
+				list9:result.length > 8+pg[req.cookies['name']]*10 ? result[8+pg[req.cookies['name']]*10].title :'',
+				list10:result.length > 9+pg[req.cookies['name']]*10 ? result[9+pg[req.cookies['name']]*10].title :'',
 		}));
 	});
 });
@@ -199,9 +249,15 @@ app.get("/search", function(req, res) {
 				break;
 			num += req.headers['referer'][i]*Math.pow(10,j++);
 		}
-		choosed_pic.push(totalRes[ num - 1 + spg*20]);
+		var same=0;
+		for(var j=0; j<choosed_pic[req.cookies['name']].length; ++j) {
+			if(choosed_pic[req.cookies['name']][j] == totalRes[req.cookies['name']][ num - 1 + spg[req.cookies['name']]*20])
+				same=1;
+		}
+		if(same == 0)
+			choosed_pic[req.cookies['name']].push(totalRes[req.cookies['name']][ num - 1 + spg[req.cookies['name']]*20]);
 	}
-	console.log(choosed_pic);
+	console.log(choosed_pic[req.cookies['name']]);
 	var opt="";
 	var optlist = [];
 	var opt1="";
@@ -234,80 +290,80 @@ app.get("/search", function(req, res) {
 		res.send(render('search.html', {
 				labelopt : opt,
 				landmarkopt: opt1,
-				choosed_pic_1 : choosed_pic.length>0 ? '"http://140.116.82.135:8000/photo_server/photo%20(' + choosed_pic[0] + ').jpg"' : '""',
-				choosed_pic_2 : choosed_pic.length>1 ? '"http://140.116.82.135:8000/photo_server/photo%20(' + choosed_pic[1] + ').jpg"' : '""',
-				choosed_pic_3 : choosed_pic.length>2 ? '"http://140.116.82.135:8000/photo_server/photo%20(' + choosed_pic[2] + ').jpg"' : '""',
-				choosed_pic_4 : choosed_pic.length>3 ? '"http://140.116.82.135:8000/photo_server/photo%20(' + choosed_pic[3] + ').jpg"' : '""',
-				choosed_pic_5 : choosed_pic.length>4 ? '"http://140.116.82.135:8000/photo_server/photo%20(' + choosed_pic[4] + ').jpg"' : '""',
+				choosed_pic_1 : choosed_pic[req.cookies['name']].length>0 ? '"http://140.116.82.135:8000/photo_server/photo%20(' + choosed_pic[req.cookies['name']][0] + ').jpg"' : '""',
+				choosed_pic_2 : choosed_pic[req.cookies['name']].length>1 ? '"http://140.116.82.135:8000/photo_server/photo%20(' + choosed_pic[req.cookies['name']][1] + ').jpg"' : '""',
+				choosed_pic_3 : choosed_pic[req.cookies['name']].length>2 ? '"http://140.116.82.135:8000/photo_server/photo%20(' + choosed_pic[req.cookies['name']][2] + ').jpg"' : '""',
+				choosed_pic_4 : choosed_pic[req.cookies['name']].length>3 ? '"http://140.116.82.135:8000/photo_server/photo%20(' + choosed_pic[req.cookies['name']][3] + ').jpg"' : '""',
+				choosed_pic_5 : choosed_pic[req.cookies['name']].length>4 ? '"http://140.116.82.135:8000/photo_server/photo%20(' + choosed_pic[req.cookies['name']][4] + ').jpg"' : '""',
 		
-				del1 : choosed_pic.length>0 ? '<input class="w3-button w3-grey" type="submit" name="del" value="刪除"/>' : '',
-				del2 : choosed_pic.length>1 ? '<input class="w3-button w3-grey" type="submit" name="del" value="刪除"/>' : '',
-				del3 : choosed_pic.length>2 ? '<input class="w3-button w3-grey" type="submit" name="del" value="刪除"/>' : '',
-				del4 : choosed_pic.length>3 ? '<input class="w3-button w3-grey" type="submit" name="del" value="刪除"/>' : '',
-				del5 : choosed_pic.length>4 ? '<input class="w3-button w3-grey" type="submit" name="del" value="刪除"/>' : '',
+				del1 : choosed_pic[req.cookies['name']].length>0 ? '<input class="w3-button w3-grey" type="submit" name="del" value="刪除"/>' : '',
+				del2 : choosed_pic[req.cookies['name']].length>1 ? '<input class="w3-button w3-grey" type="submit" name="del" value="刪除"/>' : '',
+				del3 : choosed_pic[req.cookies['name']].length>2 ? '<input class="w3-button w3-grey" type="submit" name="del" value="刪除"/>' : '',
+				del4 : choosed_pic[req.cookies['name']].length>3 ? '<input class="w3-button w3-grey" type="submit" name="del" value="刪除"/>' : '',
+				del5 : choosed_pic[req.cookies['name']].length>4 ? '<input class="w3-button w3-grey" type="submit" name="del" value="刪除"/>' : '',
 		
-				title_1: totalRes.length > 0 + spg * 20 ? temp_result[totalRes[0 + spg * 20]-1].title : '',
-				title_2: totalRes.length > 1 + spg * 20 ? temp_result[totalRes[1 + spg * 20]-1].title : '',
-				title_3: totalRes.length > 2 + spg * 20 ? temp_result[totalRes[2 + spg * 20]-1].title : '',
-				title_4: totalRes.length > 3 + spg * 20 ? temp_result[totalRes[3 + spg * 20]-1].title : '',
-				title_5: totalRes.length > 4 + spg * 20 ? temp_result[totalRes[4 + spg * 20]-1].title : '',
-				title_6: totalRes.length > 5 + spg * 20 ? temp_result[totalRes[5 + spg * 20]-1].title : '',
-				title_7: totalRes.length > 6 + spg * 20 ? temp_result[totalRes[6 + spg * 20]-1].title : '',
-				title_8: totalRes.length > 7 + spg * 20 ? temp_result[totalRes[7 + spg * 20]-1].title : '',
-				title_9: totalRes.length > 8 + spg * 20 ? temp_result[totalRes[8 + spg * 20]-1].title : '',
-				title_10: totalRes.length > 9 + spg * 20 ? temp_result[totalRes[9 + spg * 20]-1].title : '',
-				title_11: totalRes.length > 10 + spg * 20 ? temp_result[totalRes[10 + spg * 20]-1].title : '',
-				title_12: totalRes.length > 11 + spg * 20 ? temp_result[totalRes[11 + spg * 20]-1].title : '',
-				title_13: totalRes.length > 12 + spg * 20 ? temp_result[totalRes[12 + spg * 20]-1].title : '',
-				title_14: totalRes.length > 13 + spg * 20 ? temp_result[totalRes[13 + spg * 20]-1].title : '',
-				title_15: totalRes.length > 14 + spg * 20 ? temp_result[totalRes[14 + spg * 20]-1].title : '',
-				title_16: totalRes.length > 15 + spg * 20 ? temp_result[totalRes[15 + spg * 20]-1].title : '',
-				title_17: totalRes.length > 16 + spg * 20 ? temp_result[totalRes[16 + spg * 20]-1].title : '',
-				title_18: totalRes.length > 17 + spg * 20 ? temp_result[totalRes[17 + spg * 20]-1].title : '',
-				title_19: totalRes.length > 18 + spg * 20 ? temp_result[totalRes[18 + spg * 20]-1].title : '',
-				title_20: totalRes.length > 19 + spg * 20 ? temp_result[totalRes[19 + spg * 20]-1].title : '',
+				title_1: totalRes[req.cookies['name']].length > 0 + spg[req.cookies['name']] * 20 ? temp_result[req.cookies['name']][totalRes[req.cookies['name']][0 + spg[req.cookies['name']] * 20]-1].title : '',
+				title_2: totalRes[req.cookies['name']].length > 1 + spg[req.cookies['name']] * 20 ? temp_result[req.cookies['name']][totalRes[req.cookies['name']][1 + spg[req.cookies['name']] * 20]-1].title : '',
+				title_3: totalRes[req.cookies['name']].length > 2 + spg[req.cookies['name']] * 20 ? temp_result[req.cookies['name']][totalRes[req.cookies['name']][2 + spg[req.cookies['name']] * 20]-1].title : '',
+				title_4: totalRes[req.cookies['name']].length > 3 + spg[req.cookies['name']] * 20 ? temp_result[req.cookies['name']][totalRes[req.cookies['name']][3 + spg[req.cookies['name']] * 20]-1].title : '',
+				title_5: totalRes[req.cookies['name']].length > 4 + spg[req.cookies['name']] * 20 ? temp_result[req.cookies['name']][totalRes[req.cookies['name']][4 + spg[req.cookies['name']] * 20]-1].title : '',
+				title_6: totalRes[req.cookies['name']].length > 5 + spg[req.cookies['name']] * 20 ? temp_result[req.cookies['name']][totalRes[req.cookies['name']][5 + spg[req.cookies['name']] * 20]-1].title : '',
+				title_7: totalRes[req.cookies['name']].length > 6 + spg[req.cookies['name']] * 20 ? temp_result[req.cookies['name']][totalRes[req.cookies['name']][6 + spg[req.cookies['name']] * 20]-1].title : '',
+				title_8: totalRes[req.cookies['name']].length > 7 + spg[req.cookies['name']] * 20 ? temp_result[req.cookies['name']][totalRes[req.cookies['name']][7 + spg[req.cookies['name']] * 20]-1].title : '',
+				title_9: totalRes[req.cookies['name']].length > 8 + spg[req.cookies['name']] * 20 ? temp_result[req.cookies['name']][totalRes[req.cookies['name']][8 + spg[req.cookies['name']] * 20]-1].title : '',
+				title_10: totalRes[req.cookies['name']].length > 9 + spg[req.cookies['name']] * 20 ? temp_result[req.cookies['name']][totalRes[req.cookies['name']][9 + spg[req.cookies['name']] * 20]-1].title : '',
+				title_11: totalRes[req.cookies['name']].length > 10 + spg[req.cookies['name']] * 20 ? temp_result[req.cookies['name']][totalRes[req.cookies['name']][10 + spg[req.cookies['name']] * 20]-1].title : '',
+				title_12: totalRes[req.cookies['name']].length > 11 + spg[req.cookies['name']] * 20 ? temp_result[req.cookies['name']][totalRes[req.cookies['name']][11 + spg[req.cookies['name']] * 20]-1].title : '',
+				title_13: totalRes[req.cookies['name']].length > 12 + spg[req.cookies['name']] * 20 ? temp_result[req.cookies['name']][totalRes[req.cookies['name']][12 + spg[req.cookies['name']] * 20]-1].title : '',
+				title_14: totalRes[req.cookies['name']].length > 13 + spg[req.cookies['name']] * 20 ? temp_result[req.cookies['name']][totalRes[req.cookies['name']][13 + spg[req.cookies['name']] * 20]-1].title : '',
+				title_15: totalRes[req.cookies['name']].length > 14 + spg[req.cookies['name']] * 20 ? temp_result[req.cookies['name']][totalRes[req.cookies['name']][14 + spg[req.cookies['name']] * 20]-1].title : '',
+				title_16: totalRes[req.cookies['name']].length > 15 + spg[req.cookies['name']] * 20 ? temp_result[req.cookies['name']][totalRes[req.cookies['name']][15 + spg[req.cookies['name']] * 20]-1].title : '',
+				title_17: totalRes[req.cookies['name']].length > 16 + spg[req.cookies['name']] * 20 ? temp_result[req.cookies['name']][totalRes[req.cookies['name']][16 + spg[req.cookies['name']] * 20]-1].title : '',
+				title_18: totalRes[req.cookies['name']].length > 17 + spg[req.cookies['name']] * 20 ? temp_result[req.cookies['name']][totalRes[req.cookies['name']][17 + spg[req.cookies['name']] * 20]-1].title : '',
+				title_19: totalRes[req.cookies['name']].length > 18 + spg[req.cookies['name']] * 20 ? temp_result[req.cookies['name']][totalRes[req.cookies['name']][18 + spg[req.cookies['name']] * 20]-1].title : '',
+				title_20: totalRes[req.cookies['name']].length > 19 + spg[req.cookies['name']] * 20 ? temp_result[req.cookies['name']][totalRes[req.cookies['name']][19 + spg[req.cookies['name']] * 20]-1].title : '',
 				
-				pic_1: totalRes.length > 0 + spg * 20 ? head + totalRes[0 + spg * 20].toString() +rear : '""',
-				pic_2: totalRes.length > 1 + spg * 20 ? head + totalRes[1 + spg * 20].toString() +rear : '""',
-				pic_3: totalRes.length > 2 + spg * 20 ? head + totalRes[2 + spg * 20].toString() +rear : '""',
-				pic_4: totalRes.length > 3 + spg * 20 ? head + totalRes[3 + spg * 20].toString() +rear : '""',
-				pic_5: totalRes.length > 4 + spg * 20 ? head + totalRes[4 + spg * 20].toString() +rear : '""',
-				pic_6: totalRes.length > 5 + spg * 20 ? head + totalRes[5 + spg * 20].toString() +rear : '""',
-				pic_7: totalRes.length > 6 + spg * 20 ? head + totalRes[6 + spg * 20].toString() +rear : '""',
-				pic_8: totalRes.length > 7 + spg * 20 ? head + totalRes[7 + spg * 20].toString() +rear : '""',
-				pic_9: totalRes.length > 8 + spg * 20 ? head + totalRes[8 + spg * 20].toString() +rear : '""',
-				pic_10: totalRes.length > 9 + spg * 20 ? head + totalRes[9 + spg * 20].toString() +rear : '""',
-				pic_11: totalRes.length > 10 + spg * 20 ? head + totalRes[10 + spg * 20].toString() +rear : '""',
-				pic_12: totalRes.length > 11 + spg * 20 ? head + totalRes[11 + spg * 20].toString() +rear : '""',
-				pic_13: totalRes.length > 12 + spg * 20 ? head + totalRes[12 + spg * 20].toString() +rear : '""',
-				pic_14: totalRes.length > 13 + spg * 20 ? head + totalRes[13 + spg * 20].toString() +rear : '""',
-				pic_15: totalRes.length > 14 + spg * 20 ? head + totalRes[14 + spg * 20].toString() +rear : '""',
-				pic_16: totalRes.length > 15 + spg * 20 ? head + totalRes[15 + spg * 20].toString() +rear : '""',
-				pic_17: totalRes.length > 16 + spg * 20 ? head + totalRes[16 + spg * 20].toString() +rear : '""',
-				pic_18: totalRes.length > 17 + spg * 20 ? head + totalRes[17 + spg * 20].toString() +rear : '""',
-				pic_19: totalRes.length > 18 + spg * 20 ? head + totalRes[18 + spg * 20].toString() +rear : '""',
-				pic_20: totalRes.length > 19 + spg * 20 ? head + totalRes[19 + spg * 20].toString() +rear : '""',
+				pic_1: totalRes[req.cookies['name']].length > 0 + spg[req.cookies['name']] * 20 ? head + totalRes[req.cookies['name']][0 + spg[req.cookies['name']] * 20].toString() +rear : '""',
+				pic_2: totalRes[req.cookies['name']].length > 1 + spg[req.cookies['name']] * 20 ? head + totalRes[req.cookies['name']][1 + spg[req.cookies['name']] * 20].toString() +rear : '""',
+				pic_3: totalRes[req.cookies['name']].length > 2 + spg[req.cookies['name']] * 20 ? head + totalRes[req.cookies['name']][2 + spg[req.cookies['name']] * 20].toString() +rear : '""',
+				pic_4: totalRes[req.cookies['name']].length > 3 + spg[req.cookies['name']] * 20 ? head + totalRes[req.cookies['name']][3 + spg[req.cookies['name']] * 20].toString() +rear : '""',
+				pic_5: totalRes[req.cookies['name']].length > 4 + spg[req.cookies['name']] * 20 ? head + totalRes[req.cookies['name']][4 + spg[req.cookies['name']] * 20].toString() +rear : '""',
+				pic_6: totalRes[req.cookies['name']].length > 5 + spg[req.cookies['name']] * 20 ? head + totalRes[req.cookies['name']][5 + spg[req.cookies['name']] * 20].toString() +rear : '""',
+				pic_7: totalRes[req.cookies['name']].length > 6 + spg[req.cookies['name']] * 20 ? head + totalRes[req.cookies['name']][6 + spg[req.cookies['name']] * 20].toString() +rear : '""',
+				pic_8: totalRes[req.cookies['name']].length > 7 + spg[req.cookies['name']] * 20 ? head + totalRes[req.cookies['name']][7 + spg[req.cookies['name']] * 20].toString() +rear : '""',
+				pic_9: totalRes[req.cookies['name']].length > 8 + spg[req.cookies['name']] * 20 ? head + totalRes[req.cookies['name']][8 + spg[req.cookies['name']] * 20].toString() +rear : '""',
+				pic_10: totalRes[req.cookies['name']].length > 9 + spg[req.cookies['name']] * 20 ? head + totalRes[req.cookies['name']][9 + spg[req.cookies['name']] * 20].toString() +rear : '""',
+				pic_11: totalRes[req.cookies['name']].length > 10 + spg[req.cookies['name']] * 20 ? head + totalRes[req.cookies['name']][10 + spg[req.cookies['name']] * 20].toString() +rear : '""',
+				pic_12: totalRes[req.cookies['name']].length > 11 + spg[req.cookies['name']] * 20 ? head + totalRes[req.cookies['name']][11 + spg[req.cookies['name']] * 20].toString() +rear : '""',
+				pic_13: totalRes[req.cookies['name']].length > 12 + spg[req.cookies['name']] * 20 ? head + totalRes[req.cookies['name']][12 + spg[req.cookies['name']] * 20].toString() +rear : '""',
+				pic_14: totalRes[req.cookies['name']].length > 13 + spg[req.cookies['name']] * 20 ? head + totalRes[req.cookies['name']][13 + spg[req.cookies['name']] * 20].toString() +rear : '""',
+				pic_15: totalRes[req.cookies['name']].length > 14 + spg[req.cookies['name']] * 20 ? head + totalRes[req.cookies['name']][14 + spg[req.cookies['name']] * 20].toString() +rear : '""',
+				pic_16: totalRes[req.cookies['name']].length > 15 + spg[req.cookies['name']] * 20 ? head + totalRes[req.cookies['name']][15 + spg[req.cookies['name']] * 20].toString() +rear : '""',
+				pic_17: totalRes[req.cookies['name']].length > 16 + spg[req.cookies['name']] * 20 ? head + totalRes[req.cookies['name']][16 + spg[req.cookies['name']] * 20].toString() +rear : '""',
+				pic_18: totalRes[req.cookies['name']].length > 17 + spg[req.cookies['name']] * 20 ? head + totalRes[req.cookies['name']][17 + spg[req.cookies['name']] * 20].toString() +rear : '""',
+				pic_19: totalRes[req.cookies['name']].length > 18 + spg[req.cookies['name']] * 20 ? head + totalRes[req.cookies['name']][18 + spg[req.cookies['name']] * 20].toString() +rear : '""',
+				pic_20: totalRes[req.cookies['name']].length > 19 + spg[req.cookies['name']] * 20 ? head + totalRes[req.cookies['name']][19 + spg[req.cookies['name']] * 20].toString() +rear : '""',
 				
-				line_1: totalRes.length > 0 + spg * 20 ? '-----------------------------------------------------': '',
-				line_2: totalRes.length > 1 + spg * 20 ? '-----------------------------------------------------': '',
-				line_3: totalRes.length > 2 + spg * 20 ? '-----------------------------------------------------': '',
-				line_4: totalRes.length > 3 + spg * 20 ? '-----------------------------------------------------': '',
-				line_5: totalRes.length > 4 + spg * 20 ? '-----------------------------------------------------': '',
-				line_6: totalRes.length > 5 + spg * 20 ? '-----------------------------------------------------': '',
-				line_7: totalRes.length > 6 + spg * 20 ? '-----------------------------------------------------': '',
-				line_8: totalRes.length > 7 + spg * 20 ? '-----------------------------------------------------': '',
-				line_9: totalRes.length > 8 + spg * 20 ? '-----------------------------------------------------': '',
-				line_10: totalRes.length > 9 + spg * 20 ? '-----------------------------------------------------': '',
-				line_11: totalRes.length > 10 + spg * 20 ? '-----------------------------------------------------': '',
-				line_12: totalRes.length > 11 + spg * 20 ? '-----------------------------------------------------': '',
-				line_13: totalRes.length > 12 + spg * 20 ? '-----------------------------------------------------': '',
-				line_14: totalRes.length > 13 + spg * 20 ? '-----------------------------------------------------': '',
-				line_15: totalRes.length > 14 + spg * 20 ? '-----------------------------------------------------': '',
-				line_16: totalRes.length > 15 + spg * 20 ? '-----------------------------------------------------': '',
-				line_17: totalRes.length > 16 + spg * 20 ? '-----------------------------------------------------': '',
-				line_18: totalRes.length > 17 + spg * 20 ? '-----------------------------------------------------': '',
-				line_19: totalRes.length > 18 + spg * 20 ? '-----------------------------------------------------': '',
-				line_20: totalRes.length > 19 + spg * 20 ? '-----------------------------------------------------': '""'
+				line_1: totalRes[req.cookies['name']].length > 0 + spg[req.cookies['name']] * 20 ? '-----------------------------------------------------': '',
+				line_2: totalRes[req.cookies['name']].length > 1 + spg[req.cookies['name']] * 20 ? '-----------------------------------------------------': '',
+				line_3: totalRes[req.cookies['name']].length > 2 + spg[req.cookies['name']] * 20 ? '-----------------------------------------------------': '',
+				line_4: totalRes[req.cookies['name']].length > 3 + spg[req.cookies['name']] * 20 ? '-----------------------------------------------------': '',
+				line_5: totalRes[req.cookies['name']].length > 4 + spg[req.cookies['name']] * 20 ? '-----------------------------------------------------': '',
+				line_6: totalRes[req.cookies['name']].length > 5 + spg[req.cookies['name']] * 20 ? '-----------------------------------------------------': '',
+				line_7: totalRes[req.cookies['name']].length > 6 + spg[req.cookies['name']] * 20 ? '-----------------------------------------------------': '',
+				line_8: totalRes[req.cookies['name']].length > 7 + spg[req.cookies['name']] * 20 ? '-----------------------------------------------------': '',
+				line_9: totalRes[req.cookies['name']].length > 8 + spg[req.cookies['name']] * 20 ? '-----------------------------------------------------': '',
+				line_10: totalRes[req.cookies['name']].length > 9 + spg[req.cookies['name']] * 20 ? '-----------------------------------------------------': '',
+				line_11: totalRes[req.cookies['name']].length > 10 + spg[req.cookies['name']] * 20 ? '-----------------------------------------------------': '',
+				line_12: totalRes[req.cookies['name']].length > 11 + spg[req.cookies['name']] * 20 ? '-----------------------------------------------------': '',
+				line_13: totalRes[req.cookies['name']].length > 12 + spg[req.cookies['name']] * 20 ? '-----------------------------------------------------': '',
+				line_14: totalRes[req.cookies['name']].length > 13 + spg[req.cookies['name']] * 20 ? '-----------------------------------------------------': '',
+				line_15: totalRes[req.cookies['name']].length > 14 + spg[req.cookies['name']] * 20 ? '-----------------------------------------------------': '',
+				line_16: totalRes[req.cookies['name']].length > 15 + spg[req.cookies['name']] * 20 ? '-----------------------------------------------------': '',
+				line_17: totalRes[req.cookies['name']].length > 16 + spg[req.cookies['name']] * 20 ? '-----------------------------------------------------': '',
+				line_18: totalRes[req.cookies['name']].length > 17 + spg[req.cookies['name']] * 20 ? '-----------------------------------------------------': '',
+				line_19: totalRes[req.cookies['name']].length > 18 + spg[req.cookies['name']] * 20 ? '-----------------------------------------------------': '',
+				line_20: totalRes[req.cookies['name']].length > 19 + spg[req.cookies['name']] * 20 ? '-----------------------------------------------------': '""'
 				
 		
 		}));
@@ -316,23 +372,22 @@ app.get("/search", function(req, res) {
     
 });
 
-var spg=0;
 //search post
 app.post("/search", function(req, res) {
 	if(req.body.pic > 0)
-		choosed_pic.splice(req.body.pic-1, 1);
+		choosed_pic[req.cookies['name']].splice(req.body.pic-1, 1);
 	console.log("cccpic");
 	console.log(req.body.pic);
 	var head="http://140.116.82.135:8000/photo_server/photo%20(", rear=").jpg";
 	//res.sendfile(__dirname + '/search.html', function(err) {
         //if (err) res.send(404);
 	if(req.body.nextpg == "下一頁")
-		spg++;
-	else if(req.body.previouspg == "上一頁" && spg!=0)
-		spg--;
+		spg[req.cookies['name']]++;
+	else if(req.body.previouspg == "上一頁" && spg[req.cookies['name']]!=0)
+		spg[req.cookies['name']]--;
 	else if(req.body.submitDetails == "Search"){
-		spg=0;
-		totalRes = [];
+		spg[req.cookies['name']]=0;
+		totalRes[req.cookies['name']] = [];
 		var Search = req.body.Search;
 		var listCheck = ['title','date','keyword','description','reference','contributor'];
 		var titleCheck = req.body.title, dateCheck=req.body.date, keywordCheck=req.body.keyword, descriptionCheck=req.body.description, referenceCheck = req.body.reference, contributorCheck =req.body.contributor, categoryCheck=req.body.category ,priorityCheck = req.body.priority;
@@ -383,14 +438,16 @@ app.post("/search", function(req, res) {
 		{
 			if(list[l] == listCheck[l])
 			{
-			connection.query("SELECT id FROM photo_tags WHERE " + listCheck[l] + " REGEXP " + "'" +Search+ "'", function (err, result, fields) {
-				if (err) throw err;
-				for(var i=0; i < result.length ;i++)
-				{
-					if(totalRes.indexOf(result[i].id) == -1)
-						totalRes.push(result[i].id);
+				if(Search) {
+					connection.query("SELECT id FROM photo_tags WHERE " + listCheck[l] + " REGEXP " + "'" +Search+ "'", function (err, result, fields) {
+						if (err) throw err;
+						for(var i=0; i < result.length ;i++)
+						{
+							if(totalRes[req.cookies['name']].indexOf(result[i].id) == -1)
+								totalRes[req.cookies['name']].push(result[i].id);
+						}
+					});
 				}
-			});
 			}
 		}
 		
@@ -473,34 +530,34 @@ app.post("/search", function(req, res) {
 		
 		//取and 跟 show出來
 		connection.query("SELECT id FROM vision_api WHERE landmark0 = "+ "'" +landmarkCheck+ "'", function (err, result, fields) {
-			for(var i in totalRes)
+			for(var i in totalRes[req.cookies['name']])
 			{
 				if(labelRes[0]==-69)
 					labelbool = true;
 				else
-					labelbool = labelRes.indexOf(totalRes[i]) != -1;
+					labelbool = labelRes.indexOf(totalRes[req.cookies['name']][i]) != -1;
 				
 				if(landmarkRes[0]==-69)
 					landmarkbool = true;
 				else
-					landmarkbool = landmarkRes.indexOf(totalRes[i]) != -1;
+					landmarkbool = landmarkRes.indexOf(totalRes[req.cookies['name']][i]) != -1;
 					
 				if(categoryRes[0]==-69)
 					categorybool = true;
 				else
-					categorybool = categoryRes.indexOf(totalRes[i]) != -1;
+					categorybool = categoryRes.indexOf(totalRes[req.cookies['name']][i]) != -1;
 					
 				if(priorityRes[0]==-69)
 					prioritybool = true;
 				else
-					prioritybool = priorityRes.indexOf(totalRes[i]) != -1;
+					prioritybool = priorityRes.indexOf(totalRes[req.cookies['name']][i]) != -1;
 					
 				if(labelbool && landmarkbool && categorybool && prioritybool)
-					tempRes.push(totalRes[i]);
+					tempRes.push(totalRes[req.cookies['name']][i]);
 			}
 			if (err) throw err;
-			console.log("totalRes為:");
-			console.log(totalRes);
+			console.log("totalRes[req.cookies['name']]為:");
+			console.log(totalRes[req.cookies['name']]);
 			console.log("categoryRes為:");
 			console.log(categoryRes);
 			console.log("priorityRes為:");
@@ -511,91 +568,91 @@ app.post("/search", function(req, res) {
 			console.log(landmarkRes);
 			console.log("tempRes為:");
 			console.log(tempRes);
-			totalRes = tempRes;
+			totalRes[req.cookies['name']] = tempRes;
 			
 		});
 	}
 		//設定pic line url
 		connection.query("SELECT title FROM photo_tags", function (err, result, fields) {
-			temp_result = result;
-			if(totalRes.length <= (spg) * 20 && spg != 0)
-				spg--;
+			temp_result[req.cookies['name']] = result;
+			if(totalRes[req.cookies['name']].length <= (spg[req.cookies['name']]) * 20 && spg[req.cookies['name']] != 0)
+				spg[req.cookies['name']]--;
 			if (err) throw err;
 			res.send(render('search.html', {
-				choosed_pic_1 : choosed_pic.length>0 ? '"http://140.116.82.135:8000/photo_server/photo%20(' + choosed_pic[0] + ').jpg"' : '""',
-				choosed_pic_2 : choosed_pic.length>1 ? '"http://140.116.82.135:8000/photo_server/photo%20(' + choosed_pic[1] + ').jpg"' : '""',
-				choosed_pic_3 : choosed_pic.length>2 ? '"http://140.116.82.135:8000/photo_server/photo%20(' + choosed_pic[2] + ').jpg"' : '""',
-				choosed_pic_4 : choosed_pic.length>3 ? '"http://140.116.82.135:8000/photo_server/photo%20(' + choosed_pic[3] + ').jpg"' : '""',
-				choosed_pic_5 : choosed_pic.length>4 ? '"http://140.116.82.135:8000/photo_server/photo%20(' + choosed_pic[4] + ').jpg"' : '""',
+				choosed_pic_1 : choosed_pic[req.cookies['name']].length>0 ? '"http://140.116.82.135:8000/photo_server/photo%20(' + choosed_pic[req.cookies['name']][0] + ').jpg"' : '""',
+				choosed_pic_2 : choosed_pic[req.cookies['name']].length>1 ? '"http://140.116.82.135:8000/photo_server/photo%20(' + choosed_pic[req.cookies['name']][1] + ').jpg"' : '""',
+				choosed_pic_3 : choosed_pic[req.cookies['name']].length>2 ? '"http://140.116.82.135:8000/photo_server/photo%20(' + choosed_pic[req.cookies['name']][2] + ').jpg"' : '""',
+				choosed_pic_4 : choosed_pic[req.cookies['name']].length>3 ? '"http://140.116.82.135:8000/photo_server/photo%20(' + choosed_pic[req.cookies['name']][3] + ').jpg"' : '""',
+				choosed_pic_5 : choosed_pic[req.cookies['name']].length>4 ? '"http://140.116.82.135:8000/photo_server/photo%20(' + choosed_pic[req.cookies['name']][4] + ').jpg"' : '""',
 				
-				del1 : choosed_pic.length>0 ? '<input class="w3-button w3-grey" type="submit" name="del" value="刪除"/>' : '',
-				del2 : choosed_pic.length>1 ? '<input class="w3-button w3-grey" type="submit" name="del" value="刪除"/>' : '',
-				del3 : choosed_pic.length>2 ? '<input class="w3-button w3-grey" type="submit" name="del" value="刪除"/>' : '',
-				del4 : choosed_pic.length>3 ? '<input class="w3-button w3-grey" type="submit" name="del" value="刪除"/>' : '',
-				del5 : choosed_pic.length>4 ? '<input class="w3-button w3-grey" type="submit" name="del" value="刪除"/>' : '',
+				del1 : choosed_pic[req.cookies['name']].length>0 ? '<input class="w3-button w3-grey" type="submit" name="del" value="刪除"/>' : '',
+				del2 : choosed_pic[req.cookies['name']].length>1 ? '<input class="w3-button w3-grey" type="submit" name="del" value="刪除"/>' : '',
+				del3 : choosed_pic[req.cookies['name']].length>2 ? '<input class="w3-button w3-grey" type="submit" name="del" value="刪除"/>' : '',
+				del4 : choosed_pic[req.cookies['name']].length>3 ? '<input class="w3-button w3-grey" type="submit" name="del" value="刪除"/>' : '',
+				del5 : choosed_pic[req.cookies['name']].length>4 ? '<input class="w3-button w3-grey" type="submit" name="del" value="刪除"/>' : '',
 				
-				title_1: totalRes.length > 0 + spg * 20 ? result[totalRes[0 + spg * 20 ]-1].title : '',
-				title_2: totalRes.length > 1 + spg * 20 ? result[totalRes[1 + spg * 20 ]-1].title : '',
-				title_3: totalRes.length > 2 + spg * 20 ? result[totalRes[2 + spg * 20 ]-1].title : '',
-				title_4: totalRes.length > 3 + spg * 20 ? result[totalRes[3 + spg * 20 ]-1].title : '',
-				title_5: totalRes.length > 4 + spg * 20 ? result[totalRes[4 + spg * 20 ]-1].title : '',
-				title_6: totalRes.length > 5 + spg * 20 ? result[totalRes[5 + spg * 20 ]-1].title : '',
-				title_7: totalRes.length > 6 + spg * 20 ? result[totalRes[6 + spg * 20 ]-1].title : '',
-				title_8: totalRes.length > 7 + spg * 20 ? result[totalRes[7 + spg * 20 ]-1].title : '',
-				title_9: totalRes.length > 8 + spg * 20 ? result[totalRes[8 + spg * 20 ]-1].title : '',
-				title_10: totalRes.length > 9 + spg * 20 ? result[totalRes[9 + spg * 20 ]-1].title : '',
-				title_11: totalRes.length > 10 + spg * 20 ? result[totalRes[10 + spg * 20 ]-1].title : '',
-				title_12: totalRes.length > 11 + spg * 20 ? result[totalRes[11 + spg * 20 ]-1].title : '',
-				title_13: totalRes.length > 12 + spg * 20 ? result[totalRes[12 + spg * 20 ]-1].title : '',
-				title_14: totalRes.length > 13 + spg * 20 ? result[totalRes[13 + spg * 20 ]-1].title : '',
-				title_15: totalRes.length > 14 + spg * 20 ? result[totalRes[14 + spg * 20 ]-1].title : '',
-				title_16: totalRes.length > 15 + spg * 20 ? result[totalRes[15 + spg * 20 ]-1].title : '',
-				title_17: totalRes.length > 16 + spg * 20 ? result[totalRes[16 + spg * 20 ]-1].title : '',
-				title_18: totalRes.length > 17 + spg * 20 ? result[totalRes[17 + spg * 20 ]-1].title : '',
-				title_19: totalRes.length > 18 + spg * 20 ? result[totalRes[18 + spg * 20 ]-1].title : '',
-				title_20: totalRes.length > 19 + spg * 20 ? result[totalRes[19 + spg * 20 ]-1].title : '',
+				title_1: totalRes[req.cookies['name']].length > 0 + spg[req.cookies['name']] * 20 ? result[totalRes[req.cookies['name']][0 + spg[req.cookies['name']] * 20 ]-1].title : '',
+				title_2: totalRes[req.cookies['name']].length > 1 + spg[req.cookies['name']] * 20 ? result[totalRes[req.cookies['name']][1 + spg[req.cookies['name']] * 20 ]-1].title : '',
+				title_3: totalRes[req.cookies['name']].length > 2 + spg[req.cookies['name']] * 20 ? result[totalRes[req.cookies['name']][2 + spg[req.cookies['name']] * 20 ]-1].title : '',
+				title_4: totalRes[req.cookies['name']].length > 3 + spg[req.cookies['name']] * 20 ? result[totalRes[req.cookies['name']][3 + spg[req.cookies['name']] * 20 ]-1].title : '',
+				title_5: totalRes[req.cookies['name']].length > 4 + spg[req.cookies['name']] * 20 ? result[totalRes[req.cookies['name']][4 + spg[req.cookies['name']] * 20 ]-1].title : '',
+				title_6: totalRes[req.cookies['name']].length > 5 + spg[req.cookies['name']] * 20 ? result[totalRes[req.cookies['name']][5 + spg[req.cookies['name']] * 20 ]-1].title : '',
+				title_7: totalRes[req.cookies['name']].length > 6 + spg[req.cookies['name']] * 20 ? result[totalRes[req.cookies['name']][6 + spg[req.cookies['name']] * 20 ]-1].title : '',
+				title_8: totalRes[req.cookies['name']].length > 7 + spg[req.cookies['name']] * 20 ? result[totalRes[req.cookies['name']][7 + spg[req.cookies['name']] * 20 ]-1].title : '',
+				title_9: totalRes[req.cookies['name']].length > 8 + spg[req.cookies['name']] * 20 ? result[totalRes[req.cookies['name']][8 + spg[req.cookies['name']] * 20 ]-1].title : '',
+				title_10: totalRes[req.cookies['name']].length > 9 + spg[req.cookies['name']] * 20 ? result[totalRes[req.cookies['name']][9 + spg[req.cookies['name']] * 20 ]-1].title : '',
+				title_11: totalRes[req.cookies['name']].length > 10 + spg[req.cookies['name']] * 20 ? result[totalRes[req.cookies['name']][10 + spg[req.cookies['name']] * 20 ]-1].title : '',
+				title_12: totalRes[req.cookies['name']].length > 11 + spg[req.cookies['name']] * 20 ? result[totalRes[req.cookies['name']][11 + spg[req.cookies['name']] * 20 ]-1].title : '',
+				title_13: totalRes[req.cookies['name']].length > 12 + spg[req.cookies['name']] * 20 ? result[totalRes[req.cookies['name']][12 + spg[req.cookies['name']] * 20 ]-1].title : '',
+				title_14: totalRes[req.cookies['name']].length > 13 + spg[req.cookies['name']] * 20 ? result[totalRes[req.cookies['name']][13 + spg[req.cookies['name']] * 20 ]-1].title : '',
+				title_15: totalRes[req.cookies['name']].length > 14 + spg[req.cookies['name']] * 20 ? result[totalRes[req.cookies['name']][14 + spg[req.cookies['name']] * 20 ]-1].title : '',
+				title_16: totalRes[req.cookies['name']].length > 15 + spg[req.cookies['name']] * 20 ? result[totalRes[req.cookies['name']][15 + spg[req.cookies['name']] * 20 ]-1].title : '',
+				title_17: totalRes[req.cookies['name']].length > 16 + spg[req.cookies['name']] * 20 ? result[totalRes[req.cookies['name']][16 + spg[req.cookies['name']] * 20 ]-1].title : '',
+				title_18: totalRes[req.cookies['name']].length > 17 + spg[req.cookies['name']] * 20 ? result[totalRes[req.cookies['name']][17 + spg[req.cookies['name']] * 20 ]-1].title : '',
+				title_19: totalRes[req.cookies['name']].length > 18 + spg[req.cookies['name']] * 20 ? result[totalRes[req.cookies['name']][18 + spg[req.cookies['name']] * 20 ]-1].title : '',
+				title_20: totalRes[req.cookies['name']].length > 19 + spg[req.cookies['name']] * 20 ? result[totalRes[req.cookies['name']][19 + spg[req.cookies['name']] * 20 ]-1].title : '',
 				
-				pic_1: totalRes.length > 0 + spg * 20 ? head + totalRes[0 + spg * 20 ].toString() +rear : '""',
-				pic_2: totalRes.length > 1 + spg * 20 ? head + totalRes[1 + spg * 20 ].toString() +rear : '""',
-				pic_3: totalRes.length > 2 + spg * 20 ? head + totalRes[2 + spg * 20 ].toString() +rear : '""',
-				pic_4: totalRes.length > 3 + spg * 20 ? head + totalRes[3 + spg * 20 ].toString() +rear : '""',
-				pic_5: totalRes.length > 4 + spg * 20 ? head + totalRes[4 + spg * 20 ].toString() +rear : '""',
-				pic_6: totalRes.length > 5 + spg * 20 ? head + totalRes[5 + spg * 20 ].toString() +rear : '""',
-				pic_7: totalRes.length > 6 + spg * 20 ? head + totalRes[6 + spg * 20 ].toString() +rear : '""',
-				pic_8: totalRes.length > 7 + spg * 20 ? head + totalRes[7 + spg * 20 ].toString() +rear : '""',
-				pic_9: totalRes.length > 8 + spg * 20 ? head + totalRes[8 + spg * 20 ].toString() +rear : '""',
-				pic_10: totalRes.length > 9 + spg * 20 ? head + totalRes[9 + spg * 20 ].toString() +rear : '""',
-				pic_11: totalRes.length > 10 + spg * 20 ? head + totalRes[10 + spg * 20 ].toString() +rear : '""',
-				pic_12: totalRes.length > 11 + spg * 20 ? head + totalRes[11 + spg * 20 ].toString() +rear : '""',
-				pic_13: totalRes.length > 12 + spg * 20 ? head + totalRes[12 + spg * 20 ].toString() +rear : '""',
-				pic_14: totalRes.length > 13 + spg * 20 ? head + totalRes[13 + spg * 20 ].toString() +rear : '""',
-				pic_15: totalRes.length > 14 + spg * 20 ? head + totalRes[14 + spg * 20 ].toString() +rear : '""',
-				pic_16: totalRes.length > 15 + spg * 20 ? head + totalRes[15 + spg * 20 ].toString() +rear : '""',
-				pic_17: totalRes.length > 16 + spg * 20 ? head + totalRes[16 + spg * 20 ].toString() +rear : '""',
-				pic_18: totalRes.length > 17 + spg * 20 ? head + totalRes[17 + spg * 20 ].toString() +rear : '""',
-				pic_19: totalRes.length > 18 + spg * 20 ? head + totalRes[18 + spg * 20 ].toString() +rear : '""',
-				pic_20: totalRes.length > 19 + spg * 20 ? head + totalRes[19 + spg * 20 ].toString() +rear : '""',
+				pic_1: totalRes[req.cookies['name']].length > 0 + spg[req.cookies['name']] * 20 ? head + totalRes[req.cookies['name']][0 + spg[req.cookies['name']] * 20 ].toString() +rear : '""',
+				pic_2: totalRes[req.cookies['name']].length > 1 + spg[req.cookies['name']] * 20 ? head + totalRes[req.cookies['name']][1 + spg[req.cookies['name']] * 20 ].toString() +rear : '""',
+				pic_3: totalRes[req.cookies['name']].length > 2 + spg[req.cookies['name']] * 20 ? head + totalRes[req.cookies['name']][2 + spg[req.cookies['name']] * 20 ].toString() +rear : '""',
+				pic_4: totalRes[req.cookies['name']].length > 3 + spg[req.cookies['name']] * 20 ? head + totalRes[req.cookies['name']][3 + spg[req.cookies['name']] * 20 ].toString() +rear : '""',
+				pic_5: totalRes[req.cookies['name']].length > 4 + spg[req.cookies['name']] * 20 ? head + totalRes[req.cookies['name']][4 + spg[req.cookies['name']] * 20 ].toString() +rear : '""',
+				pic_6: totalRes[req.cookies['name']].length > 5 + spg[req.cookies['name']] * 20 ? head + totalRes[req.cookies['name']][5 + spg[req.cookies['name']] * 20 ].toString() +rear : '""',
+				pic_7: totalRes[req.cookies['name']].length > 6 + spg[req.cookies['name']] * 20 ? head + totalRes[req.cookies['name']][6 + spg[req.cookies['name']] * 20 ].toString() +rear : '""',
+				pic_8: totalRes[req.cookies['name']].length > 7 + spg[req.cookies['name']] * 20 ? head + totalRes[req.cookies['name']][7 + spg[req.cookies['name']] * 20 ].toString() +rear : '""',
+				pic_9: totalRes[req.cookies['name']].length > 8 + spg[req.cookies['name']] * 20 ? head + totalRes[req.cookies['name']][8 + spg[req.cookies['name']] * 20 ].toString() +rear : '""',
+				pic_10: totalRes[req.cookies['name']].length > 9 + spg[req.cookies['name']] * 20 ? head + totalRes[req.cookies['name']][9 + spg[req.cookies['name']] * 20 ].toString() +rear : '""',
+				pic_11: totalRes[req.cookies['name']].length > 10 + spg[req.cookies['name']] * 20 ? head + totalRes[req.cookies['name']][10 + spg[req.cookies['name']] * 20 ].toString() +rear : '""',
+				pic_12: totalRes[req.cookies['name']].length > 11 + spg[req.cookies['name']] * 20 ? head + totalRes[req.cookies['name']][11 + spg[req.cookies['name']] * 20 ].toString() +rear : '""',
+				pic_13: totalRes[req.cookies['name']].length > 12 + spg[req.cookies['name']] * 20 ? head + totalRes[req.cookies['name']][12 + spg[req.cookies['name']] * 20 ].toString() +rear : '""',
+				pic_14: totalRes[req.cookies['name']].length > 13 + spg[req.cookies['name']] * 20 ? head + totalRes[req.cookies['name']][13 + spg[req.cookies['name']] * 20 ].toString() +rear : '""',
+				pic_15: totalRes[req.cookies['name']].length > 14 + spg[req.cookies['name']] * 20 ? head + totalRes[req.cookies['name']][14 + spg[req.cookies['name']] * 20 ].toString() +rear : '""',
+				pic_16: totalRes[req.cookies['name']].length > 15 + spg[req.cookies['name']] * 20 ? head + totalRes[req.cookies['name']][15 + spg[req.cookies['name']] * 20 ].toString() +rear : '""',
+				pic_17: totalRes[req.cookies['name']].length > 16 + spg[req.cookies['name']] * 20 ? head + totalRes[req.cookies['name']][16 + spg[req.cookies['name']] * 20 ].toString() +rear : '""',
+				pic_18: totalRes[req.cookies['name']].length > 17 + spg[req.cookies['name']] * 20 ? head + totalRes[req.cookies['name']][17 + spg[req.cookies['name']] * 20 ].toString() +rear : '""',
+				pic_19: totalRes[req.cookies['name']].length > 18 + spg[req.cookies['name']] * 20 ? head + totalRes[req.cookies['name']][18 + spg[req.cookies['name']] * 20 ].toString() +rear : '""',
+				pic_20: totalRes[req.cookies['name']].length > 19 + spg[req.cookies['name']] * 20 ? head + totalRes[req.cookies['name']][19 + spg[req.cookies['name']] * 20 ].toString() +rear : '""',
 				
-				line_1: totalRes.length > 0 + spg * 20 ? '-----------------------------------------------------': '',
-				line_2: totalRes.length > 1 + spg * 20 ? '-----------------------------------------------------': '',
-				line_3: totalRes.length > 2 + spg * 20 ? '-----------------------------------------------------': '',
-				line_4: totalRes.length > 3 + spg * 20 ? '-----------------------------------------------------': '',
-				line_5: totalRes.length > 4 + spg * 20 ? '-----------------------------------------------------': '',
-				line_6: totalRes.length > 5 + spg * 20 ? '-----------------------------------------------------': '',
-				line_7: totalRes.length > 6 + spg * 20 ? '-----------------------------------------------------': '',
-				line_8: totalRes.length > 7 + spg * 20 ? '-----------------------------------------------------': '',
-				line_9: totalRes.length > 8 + spg * 20 ? '-----------------------------------------------------': '',
-				line_10: totalRes.length > 9 + spg * 20 ? '-----------------------------------------------------': '',
-				line_11: totalRes.length > 10 + spg * 20 ? '-----------------------------------------------------': '',
-				line_12: totalRes.length > 11 + spg * 20 ? '-----------------------------------------------------': '',
-				line_13: totalRes.length > 12 + spg * 20 ? '-----------------------------------------------------': '',
-				line_14: totalRes.length > 13 + spg * 20 ? '-----------------------------------------------------': '',
-				line_15: totalRes.length > 14 + spg * 20 ? '-----------------------------------------------------': '',
-				line_16: totalRes.length > 15 + spg * 20 ? '-----------------------------------------------------': '',
-				line_17: totalRes.length > 16 + spg * 20 ? '-----------------------------------------------------': '',
-				line_18: totalRes.length > 17 + spg * 20 ? '-----------------------------------------------------': '',
-				line_19: totalRes.length > 18 + spg * 20 ? '-----------------------------------------------------': '',
-				line_20: totalRes.length > 19 + spg * 20 ? '-----------------------------------------------------': '""'	
+				line_1: totalRes[req.cookies['name']].length > 0 + spg[req.cookies['name']] * 20 ? '-----------------------------------------------------': '',
+				line_2: totalRes[req.cookies['name']].length > 1 + spg[req.cookies['name']] * 20 ? '-----------------------------------------------------': '',
+				line_3: totalRes[req.cookies['name']].length > 2 + spg[req.cookies['name']] * 20 ? '-----------------------------------------------------': '',
+				line_4: totalRes[req.cookies['name']].length > 3 + spg[req.cookies['name']] * 20 ? '-----------------------------------------------------': '',
+				line_5: totalRes[req.cookies['name']].length > 4 + spg[req.cookies['name']] * 20 ? '-----------------------------------------------------': '',
+				line_6: totalRes[req.cookies['name']].length > 5 + spg[req.cookies['name']] * 20 ? '-----------------------------------------------------': '',
+				line_7: totalRes[req.cookies['name']].length > 6 + spg[req.cookies['name']] * 20 ? '-----------------------------------------------------': '',
+				line_8: totalRes[req.cookies['name']].length > 7 + spg[req.cookies['name']] * 20 ? '-----------------------------------------------------': '',
+				line_9: totalRes[req.cookies['name']].length > 8 + spg[req.cookies['name']] * 20 ? '-----------------------------------------------------': '',
+				line_10: totalRes[req.cookies['name']].length > 9 + spg[req.cookies['name']] * 20 ? '-----------------------------------------------------': '',
+				line_11: totalRes[req.cookies['name']].length > 10 + spg[req.cookies['name']] * 20 ? '-----------------------------------------------------': '',
+				line_12: totalRes[req.cookies['name']].length > 11 + spg[req.cookies['name']] * 20 ? '-----------------------------------------------------': '',
+				line_13: totalRes[req.cookies['name']].length > 12 + spg[req.cookies['name']] * 20 ? '-----------------------------------------------------': '',
+				line_14: totalRes[req.cookies['name']].length > 13 + spg[req.cookies['name']] * 20 ? '-----------------------------------------------------': '',
+				line_15: totalRes[req.cookies['name']].length > 14 + spg[req.cookies['name']] * 20 ? '-----------------------------------------------------': '',
+				line_16: totalRes[req.cookies['name']].length > 15 + spg[req.cookies['name']] * 20 ? '-----------------------------------------------------': '',
+				line_17: totalRes[req.cookies['name']].length > 16 + spg[req.cookies['name']] * 20 ? '-----------------------------------------------------': '',
+				line_18: totalRes[req.cookies['name']].length > 17 + spg[req.cookies['name']] * 20 ? '-----------------------------------------------------': '',
+				line_19: totalRes[req.cookies['name']].length > 18 + spg[req.cookies['name']] * 20 ? '-----------------------------------------------------': '',
+				line_20: totalRes[req.cookies['name']].length > 19 + spg[req.cookies['name']] * 20 ? '-----------------------------------------------------': '""'	
 			}));
 			//console.log(result);
 			
@@ -604,7 +661,7 @@ app.post("/search", function(req, res) {
 });
 
 app.get("/search/:pick", function(req, res) {
-	connection.query("SELECT * FROM photo_tags AS a INNER JOIN vision_api AS b ON a.id=b.id WHERE a.id=" + "'" + totalRes[req.params.pick-1] + "'", function (err, result, fields) {
+	connection.query("SELECT * FROM photo_tags AS a INNER JOIN vision_api AS b ON a.id=b.id WHERE a.id=" + "'" + totalRes[req.cookies['name']][req.params.pick-1] + "'", function (err, result, fields) {
 		var label = [], landmark = []
 		var k=0;
 		for(var i=0; i<31; ++i) {
@@ -619,7 +676,7 @@ app.get("/search/:pick", function(req, res) {
 				landmark[k++]=(result[0]["landmark"+i.toString()]);
 		}
 		res.send(render('pic_info.html', {
-			pic : '"http://140.116.82.135:8000/photo_server/photo%20(' + totalRes[req.params.pick-1 +spg*20] + ').jpg"',
+			pic : '"http://140.116.82.135:8000/photo_server/photo%20(' + totalRes[req.cookies['name']][req.params.pick-1 +spg[req.cookies['name']]*20] + ').jpg"',
 			title: result[0].title=='NULL' ? '' : result[0].title,
 			date: result[0].date=='NULL' ? '' : result[0].date,
 			latitude: result[0].latitude=='NULL' ? '' : result[0].latitude,
@@ -679,6 +736,7 @@ app.get("/search/:pick", function(req, res) {
 });
 
 port = process.env.PORT || 1001;
-app.listen(port, function() {
+server.listen(port, function() {
     console.log("Listening on " + port);
 });
+//const io = require('socket.io')(server).listen(port);

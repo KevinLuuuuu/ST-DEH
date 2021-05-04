@@ -12,9 +12,51 @@
 	</style>
 	</head>
 
-	<body>
+	<script>
+		function jump(){
+			getValue();
+			window.location.href = 'http://140.116.82.135:1001/search';
+		}
+		function getValue(){
+			localStorage.setItem("title_ls",document.getElementById("title").value);
+			localStorage.setItem("description_ls",document.getElementById("description").value);
+			localStorage.setItem("contributor_ls",document.getElementById("contributor").value);
+			localStorage.setItem("category_ls",document.getElementById("category").value);
+		}
+		function setValue(){
+			var titleValue = localStorage.title_ls;
+			var descriptionValue = localStorage.description_ls;
+			var categoryValue = localStorage.category_ls;
+			var contributorValue = localStorage.contributor_ls;
+			if(titleValue != undefined)
+				document.getElementById("title").value = titleValue;
+			else
+				document.getElementById("title").value = "";
+			if(descriptionValue != undefined)
+				document.getElementById("description").value = descriptionValue;
+			else
+				document.getElementById("description").value = "";
+			if(categoryValue != undefined)
+				document.getElementById("category").value = categoryValue;
+			else
+				document.getElementById("category").value = "All";
+			if(contributorValue != undefined)
+				document.getElementById("contributor").value = contributorValue;
+			else
+				document.getElementById("contributor").value = "";
+		}
+		function clearLocal(){
+			localStorage.clear();
+		}
+		function check(){
+			clearLocal();
+			reload();
+		}
+	</script>
+
+	<body onload="setValue()">
 		<div class="w3-bar w3-top w3-teal w3-large" style="z-index:4">
-		<a href="http://140.116.82.135:1001/list" class="w3-bar-item w3-right">DEH</a>
+		<a href="http://140.116.82.135:1001/list" class="w3-bar-item w3-right" onclick = "clearLocal()">DEH</a>
 	</div>
 
 	<div class="w3-main" style="margin-top:43px;">
@@ -28,18 +70,18 @@
 		
 			<li>
 				<label>標題:</label><br>
-				<input type="text" id="title" name="title" required/><br>
+				<input type="text" id="title" name="title" value="" required/><br>
 			</li>
 			<br>
 			<li>
 				<label>描述:</label><br>
-				<input type="text" id="description" name="description" required/><br>
+				<input type="text" id="description" name="description" value="" required/><br>
 			</li>
 
 			<li>
 				<p>範疇:
 					<br>
-					<select name="category">
+					<select name="category" id="category">
 					<option value="All">All</option>
 					<option value="古蹟">古蹟</option>
 					<option value="歷史建築">歷史建築</option>
@@ -66,15 +108,25 @@
 			
 			<li>
 				<label>景點製作貢獻者:</label><br>
-				<input type="text" id="contributor" name="contributor" required/><br>
+				<input type="text" id="contributor" name="contributor" value="" required/><br>
 			</li>
 			<br>
 			<div class="w3-container">
-				<input class="w3-button w3-dark-grey" type="submit" id="submitDetails" name="submitDetails" value="確定"/>
-				<a href="http://140.116.82.135:1001/search">
-				<input class="w3-button w3-dark-grey" type="button" value="前往Search"></a>
+				<input class="w3-button w3-dark-grey" type="submit" onclick = "check()" id="submitDetails" name="submitDetails" value="確定"/>
+				<input class="w3-button w3-dark-grey" type="button" onclick = "jump()" value="前往Search" id="gotoSearch" name="gotoSearch">
+				
 			</div>
 		</form>
+		<!--
+		<form action="/search" method="post">
+		
+			<li>
+				<input type="hidden" id="title" name="title" value="{title_v}" required/><br>
+			</li>
+			<input class="w3-button w3-dark-grey" type="submit" value="前往Search" id="gotoSearch" name="gotoSearch"></a>		
+		</form>
+		-->
+		
 		<br>
 		</ul>
 		<br><br>
