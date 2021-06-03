@@ -29,7 +29,7 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
     @IBOutlet weak var keyw_text: UILabel!
     @IBOutlet weak var des_text: UILabel!
     @IBOutlet weak var refe_text: UILabel!
-    @IBOutlet weak var reas_text: UILabel!
+    @IBOutlet weak var contri_text: UILabel!
     @IBOutlet weak var com_text: UILabel!
     @IBOutlet weak var pri_text: UILabel!
     @IBOutlet weak var scrollView: UIScrollView!
@@ -79,7 +79,7 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
     @IBOutlet weak var keyword_text: UITextField!
     @IBOutlet weak var description_text: UITextField!
     @IBOutlet weak var reference_text: UITextField!
-    @IBOutlet weak var reason_text: UITextField!
+    @IBOutlet weak var contributor_text: UITextField!
     @IBOutlet weak var companion_text: UITextField!
     @IBOutlet weak var Cate_text: UITextField!
     @IBOutlet weak var priority_text: UITextField!
@@ -108,9 +108,9 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
         keyw_text?.frame = CGRect(x: 20, y: image_bottom+29*7+8*7, width: 109, height: 29)
         des_text?.frame = CGRect(x: 20, y: image_bottom+29*8+8*8, width: 109, height: 29)
         refe_text?.frame = CGRect(x: 20, y: image_bottom+29*9+8*9, width: 109, height: 29)
-        reas_text?.frame = CGRect(x: 20, y: image_bottom+29*10+8*10, width: 109, height: 29)
-        com_text?.frame = CGRect(x: 20, y: image_bottom+29*11+8*11, width: 109, height: 29)
-        pri_text?.frame = CGRect(x: 20, y: image_bottom+29*12+8*12, width: 109, height: 29)
+        com_text?.frame = CGRect(x: 20, y: image_bottom+29*10+8*10, width: 109, height: 29)
+        pri_text?.frame = CGRect(x: 20, y: image_bottom+29*11+8*11, width: 109, height: 29)
+        contri_text?.frame = CGRect(x: 20, y: image_bottom+29*12+8*12, width: 109, height: 29)
         
         title_text?.frame = CGRect(x: 135, y: CGFloat(image_bottom-3), width: fullsize.width-145, height: 34)
         latitude?.frame = CGRect(x: 135, y: CGFloat(image_bottom+29+8+4-6), width: fullsize.width-145, height: 34)
@@ -123,9 +123,9 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
         keyword_text?.frame = CGRect(x: 135, y: CGFloat(image_bottom+(29+8)*7-3), width: fullsize.width-145, height: 34)
         description_text?.frame = CGRect(x: 135, y: CGFloat(image_bottom+(29+8)*8-3), width: fullsize.width-145, height: 34)
         reference_text?.frame = CGRect(x: 135, y: CGFloat(image_bottom+(29+8)*9-3), width: fullsize.width-145, height: 34)
-        reason_text?.frame = CGRect(x: 135, y: CGFloat(image_bottom+(29+8)*10-3), width: fullsize.width-145, height: 34)
-        companion_text?.frame = CGRect(x: 135, y: CGFloat(image_bottom+(29+8)*11-3), width: fullsize.width-145, height: 34)
-        priority_text?.frame = CGRect(x: 135, y: CGFloat(image_bottom+(29+8)*12-3), width: fullsize.width-145, height: 34)
+        companion_text?.frame = CGRect(x: 135, y: CGFloat(image_bottom+(29+8)*10-3), width: fullsize.width-145, height: 34)
+        priority_text?.frame = CGRect(x: 135, y: CGFloat(image_bottom+(29+8)*11-3), width: fullsize.width-145, height: 34)
+        contributor_text?.frame = CGRect(x: 135, y: CGFloat(image_bottom+(29+8)*12-3), width: fullsize.width-145, height: 34)
         Choose_Label?.frame = CGRect(x: Int(fullsize.width / 8 - 20), y: image_bottom+(29+8)*12-3+50, width: 158, height: 31)
         done_but?.frame = CGRect(x: Int(fullsize.width / 8 * 6 - 80), y: image_bottom+(29+8)*12-3+50, width: 158, height: 31)
         
@@ -133,7 +133,7 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
         keyword_text?.attributedPlaceholder = NSAttributedString(string:"請輸入照片關鍵字",  attributes: [NSAttributedString.Key.foregroundColor:UIColor.lightGray])
         description_text?.attributedPlaceholder = NSAttributedString(string:"請輸入照片描述",  attributes: [NSAttributedString.Key.foregroundColor:UIColor.lightGray])
         reference_text?.attributedPlaceholder = NSAttributedString(string:"請輸入參考資料",  attributes: [NSAttributedString.Key.foregroundColor:UIColor.lightGray])
-        reason_text?.attributedPlaceholder = NSAttributedString(string:"來這個地點的理由",  attributes: [NSAttributedString.Key.foregroundColor:UIColor.lightGray])
+        contributor_text?.attributedPlaceholder = NSAttributedString(string:"拍照者",  attributes: [NSAttributedString.Key.foregroundColor:UIColor.lightGray])
         companion_text?.attributedPlaceholder = NSAttributedString(string:"誰跟你一起來",  attributes: [NSAttributedString.Key.foregroundColor:UIColor.lightGray])
         Cate_text?.attributedPlaceholder = NSAttributedString(string:"ALL",  attributes: [NSAttributedString.Key.foregroundColor:UIColor.lightGray])
         priority_text?.attributedPlaceholder = NSAttributedString(string:"喜好程度",  attributes: [NSAttributedString.Key.foregroundColor:UIColor.lightGray])
@@ -146,8 +146,8 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
         description_text?.layer.borderWidth = 2
         reference_text?.layer.borderColor = UIColor.black.cgColor
         reference_text?.layer.borderWidth = 2
-        reason_text?.layer.borderColor = UIColor.black.cgColor
-        reason_text?.layer.borderWidth = 2
+        contributor_text?.layer.borderColor = UIColor.black.cgColor
+        contributor_text?.layer.borderWidth = 2
         companion_text?.layer.borderColor = UIColor.black.cgColor
         companion_text?.layer.borderWidth = 2
         Cate_text?.layer.borderColor = UIColor.black.cgColor
@@ -282,7 +282,7 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
                         let label = labelAnnotations[index]["description"].stringValue
                         labels.append(label)
                         label_labels.append(label)
-                        label_bool.append(false)
+                        label_bool.append(true)
                     }
                     for label in labels {
                         // if it's not the last item add a comma
@@ -306,7 +306,7 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
                         let label = landmarkAnnotations[index]["description"].stringValue
                         labels.append(label)
                         landmark_labels.append(label)
-                        landmark_bool.append(false)
+                        landmark_bool.append(true)
                     }
                     for label in labels {
                         // if it's not the last item add a comma
@@ -384,7 +384,6 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
         keyword_text.text = ""
         description_text.text = ""
         reference_text.text = ""
-        reason_text.text = ""
         companion_text.text = ""
         Cate_text.text = ""
         priority_text.text = ""
@@ -505,27 +504,27 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
         }
         if(label_labels.count != 0) {
             for i in 0...label_labels.count - 1 {
-                if(!label_bool[i]) {
+                if(label_bool[i]) {
                     vision_json["label" + String(i)] = label_labels[i]
                 }
             }
         }
         if(landmark_labels.count != 0) {
             for i in 0...landmark_labels.count - 1 {
-                if(!landmark_bool[i]) {
+                if(landmark_bool[i]) {
                     vision_json["landmark" + String(i)] = landmark_labels[i]
                 }
             }
         }
         
         var ti = (title_text.text == "") ? "NULL" : title_text.text
-        var cat = (Cate_text.text == "") ? "NULL" : Cate_text.text
+        var cat = (Cate_text.text == "") ? "ALL" : Cate_text.text
         var k = (keyword_text.text == "") ? "NULL" : keyword_text.text
         var d = (description_text.text == "") ? "NULL" : description_text.text
         var ref = (reference_text.text == "") ? "NULL" : reference_text.text
-        var rea = (reason_text.text == "") ? "NULL" : reason_text.text
         var c = (companion_text.text == "") ? "NULL" : companion_text.text
         var p = (priority_text.text == "") ? 1 : star_count + 1
+        var contri = (contributor_text.text == "") ? "NULL" : contributor_text.text
         
         
         var send_json: [String : Any] =
@@ -536,19 +535,16 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
                      "altitude" : photo_location_temp[2],
                      "orientation" : positionValue_temp,
                      "azimuth" : photo_orient_temp,
-                     "weather" : "sunny",   //un
-                     "speed" : "0",         //un
-                     "address" : "0",        //un
-                     "era" : "0",            //un
+                     //"weather" : "sunny",   //un
+                     //"address" : "NULL",        //un
+                     //"era" : "NULL",            //un
                      "category" : cat,
                      "keyword" : k,
                      "description" : d,
                      "reference" : ref,
-                     "reason" : rea,
                      "companion" : c,
                      "priority" : p,
-                     "contributor" : "0",
-                     "url" : "0",
+                     "contributor" : contri,
                      "vision_api" : vision_json
                     ]
         wait.startAnimating()
@@ -577,7 +573,6 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
                 self.keyword_text.text = ""
                 self.description_text.text = ""
                 self.reference_text.text = ""
-                self.reason_text.text = ""
                 self.companion_text.text = ""
                 self.Cate_text.text = ""
                 self.priority_text.text = ""
@@ -647,7 +642,7 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
             photo_location[0]=location.coordinate.latitude
             photo_location[1]=location.coordinate.longitude
             photo_location[2]=location.altitude
-            photo_date=(location.timestamp + 8*60*60).description
+            photo_date=(location.timestamp + 8*60*60).description[0...18]
             //photo_date=location.timestamp.description(with: .current)
             //print(type(of: location.timestamp))
             }
@@ -725,6 +720,20 @@ extension ViewController : UIPickerViewDelegate {
             priority_text.text = Priority[row]
             star_count = row
         }
+    }
+}
+
+extension String {
+    subscript (bounds: CountableClosedRange<Int>) -> String {
+        let start = index(startIndex, offsetBy: bounds.lowerBound)
+        let end = index(startIndex, offsetBy: bounds.upperBound)
+        return String(self[start...end])
+    }
+
+    subscript (bounds: CountableRange<Int>) -> String {
+        let start = index(startIndex, offsetBy: bounds.lowerBound)
+        let end = index(startIndex, offsetBy: bounds.upperBound)
+        return String(self[start..<end])
     }
 }
 
