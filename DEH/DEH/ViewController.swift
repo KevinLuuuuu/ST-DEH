@@ -70,7 +70,7 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
     @IBOutlet weak var wait: UIActivityIndicatorView!
     
     
-    var googleAPIKey = "AIzaSyAfumZAske4fWObPXEUW-eg04FFBmsq1qA"
+    var googleAPIKey = "***"
     var googleURL: URL {
         return URL(string: "https://vision.googleapis.com/v1/images:annotate?key=\(googleAPIKey)")!
     }
